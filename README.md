@@ -4,7 +4,7 @@
 
 [![Release](https://img.shields.io/github/v/release/Llgok/semtech_cpp_bus_driver?style=flat-square)](https://github.com/Llgok/semtech_cpp_bus_driver/releases)
 [![License](https://img.shields.io/github/license/Llgok/semtech_cpp_bus_driver?style=flat-square)](./LICENSE)
-[![ESP-IDF](https://img.shields.io/badge/framework-ESP--IDF-ff6f00?style=flat-square)](https://github.com/espressif/esp-idf)
+[![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.5.3%2B-ff6f00?style=flat-square)](https://github.com/espressif/esp-idf)
 
 `semtech_cpp_bus_driver` is an ESP-IDF bridge between the official Semtech
 radio drivers and [`cpp_bus_driver`](https://github.com/Llgok/cpp_bus_driver).
