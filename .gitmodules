@@ -1,0 +1,6 @@
+[submodule "third_party/SWL2001"]
+	path = third_party/SWL2001
+	url = https://github.com/Lora-net/SWL2001.git
+[submodule "third_party/usp"]
+	path = third_party/usp
+	url = https://github.com/Lora-net/usp.git
