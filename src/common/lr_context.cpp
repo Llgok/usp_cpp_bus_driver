@@ -1,19 +1,19 @@
 /*
- * @Description: None
+ * @Description: 实现 LR11xx 与 LR20xx 共用的传输操作
  * @Author: LILYGO_L
- * @Date: 2026-07-10
- * @LastEditTime: 2026-07-12 16:30:56
+ * @Date: 2026-07-10 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
-#include "radio_context.h"
+#include "lr_context.h"
 
 #include <algorithm>
 #include <limits>
 #include <memory>
 #include <new>
 
-namespace semtech_cpp_bus_driver {
-bool RadioContext::Init(int32_t new_frequency_hz) {
+namespace usp_cpp_bus_driver {
+bool LrContext::Init(int32_t new_frequency_hz) {
   if ((bus == nullptr) || !reset_callback || (busy_pin < 0) || (cs_pin < 0)) {
     return false;
   }
@@ -31,7 +31,7 @@ bool RadioContext::Init(int32_t new_frequency_hz) {
   return true;
 }
 
-bool RadioContext::Deinit(bool delete_bus) {
+bool LrContext::Deinit(bool delete_bus) {
   if (bus == nullptr || !bus->Deinit(delete_bus)) {
     return false;
   }
@@ -40,7 +40,7 @@ bool RadioContext::Deinit(bool delete_bus) {
   return true;
 }
 
-bool RadioContext::WaitWhileBusy(uint32_t timeout_us) const {
+bool LrContext::WaitWhileBusy(uint32_t timeout_us) const {
   if (!initialized || (bus == nullptr) || (busy_pin < 0)) {
     return false;
   }
@@ -51,15 +51,15 @@ bool RadioContext::WaitWhileBusy(uint32_t timeout_us) const {
     bus->DelayUs(1);
   }
   bus->LogMessage(cpp_bus_driver::Tool::LogLevel::kError, __FILE__, __LINE__,
-      "Semtech radio busy timeout\n");
+      "USP radio busy timeout\n");
   return false;
 }
 
-bool RadioContext::CheckReady() {
+bool LrContext::CheckReady() {
   return sleeping ? Wakeup() : WaitWhileBusy();
 }
 
-bool RadioContext::Reset(uint32_t reset_time_ms, uint32_t startup_time_ms) {
+bool LrContext::Reset(uint32_t reset_time_ms, uint32_t startup_time_ms) {
   if (!initialized || (bus == nullptr) || !reset_callback) {
     return false;
   }
@@ -72,7 +72,7 @@ bool RadioContext::Reset(uint32_t reset_time_ms, uint32_t startup_time_ms) {
   return result && WaitWhileBusy();
 }
 
-bool RadioContext::Wakeup() {
+bool LrContext::Wakeup() {
   if (!initialized || (bus == nullptr)) {
     return false;
   }
@@ -94,7 +94,7 @@ bool RadioContext::Wakeup() {
   return true;
 }
 
-bool RadioContext::Write(const uint8_t* command, size_t command_length,
+bool LrContext::Write(const uint8_t* command, size_t command_length,
     const uint8_t* data, size_t data_length) {
   if (!initialized || (command == nullptr) || (command_length == 0) ||
       ((data == nullptr) && (data_length != 0)) ||
@@ -116,7 +116,7 @@ bool RadioContext::Write(const uint8_t* command, size_t command_length,
   return bus->Write(buffer.get(), transaction_size);
 }
 
-bool RadioContext::Read(const uint8_t* command, size_t command_length,
+bool LrContext::Read(const uint8_t* command, size_t command_length,
     size_t dummy_length, uint8_t* data, size_t data_length) {
   if ((data == nullptr) && (data_length != 0)) {
     return false;
@@ -139,7 +139,7 @@ bool RadioContext::Read(const uint8_t* command, size_t command_length,
   return true;
 }
 
-bool RadioContext::ReadRaw(const uint8_t* command, size_t command_length,
+bool LrContext::ReadRaw(const uint8_t* command, size_t command_length,
     uint8_t* response, size_t response_length) {
   if (!initialized || (command == nullptr) || (command_length == 0) ||
       ((response == nullptr) && (response_length != 0)) || !CheckReady() ||
@@ -159,7 +159,7 @@ bool RadioContext::ReadRaw(const uint8_t* command, size_t command_length,
          bus->WriteRead(write_buffer.get(), response, response_length);
 }
 
-bool RadioContext::DirectRead(uint8_t* data, size_t data_length) {
+bool LrContext::DirectRead(uint8_t* data, size_t data_length) {
   if (!initialized || ((data == nullptr) && (data_length != 0)) ||
       !CheckReady()) {
     return false;
@@ -174,7 +174,7 @@ bool RadioContext::DirectRead(uint8_t* data, size_t data_length) {
          bus->WriteRead(write_buffer.get(), data, data_length);
 }
 
-bool RadioContext::DirectRead(const uint8_t* command, size_t command_length,
+bool LrContext::DirectRead(const uint8_t* command, size_t command_length,
     uint8_t* data, size_t data_length) {
   if (!initialized || (command == nullptr) || (command_length == 0) ||
       ((data == nullptr) && (data_length != 0)) ||
@@ -201,4 +201,4 @@ bool RadioContext::DirectRead(const uint8_t* command, size_t command_length,
   }
   return true;
 }
-}  // namespace semtech_cpp_bus_driver
+}  // namespace usp_cpp_bus_driver

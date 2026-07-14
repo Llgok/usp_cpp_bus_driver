@@ -1,18 +1,18 @@
 /*
- * @Description: None
+ * @Description: 实现 USP LR20xx 驱动的 C++ 桥接
  * @Author: LILYGO_L
- * @Date: 2026-07-10
- * @LastEditTime: 2026-07-12 16:30:56
+ * @Date: 2026-07-10 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #include "lr20xx/lr20xx_driver.h"
 
 #include <utility>
 
-#include "common/radio_context.h"
+#include "common/lr_context.h"
 #include "smtc_rac_lib/radio_drivers/lr20xx_driver/inc/lr20xx_hal.h"
 
-namespace semtech_cpp_bus_driver {
+namespace usp_cpp_bus_driver {
 namespace {
 constexpr size_t kFifoCapacity = 256;
 }  // namespace
@@ -20,7 +20,7 @@ constexpr size_t kFifoCapacity = 256;
 Lr20xx::Lr20xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
     int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback,
     WakeupCallback wakeup_callback)
-    : context_(std::make_unique<RadioContext>()) {
+    : context_(std::make_unique<LrContext>()) {
   context_->bus = std::move(bus);
   context_->busy_pin = busy_pin;
   context_->cs_pin = cs_pin;
@@ -129,4 +129,4 @@ bool Lr20xx::initialized() const { return context_->initialized; }
 const void* Lr20xx::context() {
   return initialized() ? context_.get() : nullptr;
 }
-}  // namespace semtech_cpp_bus_driver
+}  // namespace usp_cpp_bus_driver

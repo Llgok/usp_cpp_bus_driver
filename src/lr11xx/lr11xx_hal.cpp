@@ -1,8 +1,8 @@
 /*
- * @Description: None
+ * @Description: 实现 USP LR11xx 硬件抽象层
  * @Author: LILYGO_L
- * @Date: 2026-07-10
- * @LastEditTime: 2026-07-12 12:32:29
+ * @Date: 2026-07-10 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #include "smtc_rac_lib/radio_drivers/lr11xx_driver/src/lr11xx_hal.h"
@@ -12,7 +12,7 @@
 #include <memory>
 #include <new>
 
-#include "common/radio_context.h"
+#include "common/lr_context.h"
 
 namespace {
 constexpr uint8_t kSystemCommandGroup = 0x01;
@@ -21,13 +21,13 @@ constexpr uint32_t kResetTimeMs = 5;
 constexpr uint32_t kStartupTimeMs = 205;
 
 /**
- * @brief 将 Semtech 不透明上下文转换为桥接驱动传输上下文
- * @param context Semtech 驱动传入的不透明上下文
+ * @brief 将 USP 不透明上下文转换为桥接驱动传输上下文
+ * @param context USP 驱动传入的不透明上下文
  * @return 可写的桥接驱动传输上下文
  */
-semtech_cpp_bus_driver::RadioContext* GetContext(const void* context) {
-  return const_cast<semtech_cpp_bus_driver::RadioContext*>(
-      static_cast<const semtech_cpp_bus_driver::RadioContext*>(context));
+usp_cpp_bus_driver::LrContext* GetContext(const void* context) {
+  return const_cast<usp_cpp_bus_driver::LrContext*>(
+      static_cast<const usp_cpp_bus_driver::LrContext*>(context));
 }
 
 /**
@@ -39,7 +39,7 @@ semtech_cpp_bus_driver::RadioContext* GetContext(const void* context) {
  * @param data_length 负载字节数
  * @return 内存分配、CRC 生成和 SPI 传输均成功时返回 true
  */
-bool WriteCommand(semtech_cpp_bus_driver::RadioContext* radio,
+bool WriteCommand(usp_cpp_bus_driver::LrContext* radio,
     const uint8_t* command, uint16_t command_length, const uint8_t* data,
     uint16_t data_length) {
   if ((radio == nullptr) || (command == nullptr) || (command_length == 0) ||
@@ -72,7 +72,7 @@ bool WriteCommand(semtech_cpp_bus_driver::RadioContext* radio,
  * @param data_length 请求读取的响应字节数
  * @return 传输和可选 CRC 校验均成功时返回 true
  */
-bool ReadCommand(semtech_cpp_bus_driver::RadioContext* radio,
+bool ReadCommand(usp_cpp_bus_driver::LrContext* radio,
     const uint8_t* command, uint16_t command_length, uint8_t* data,
     uint16_t data_length) {
   if ((radio == nullptr) || (command == nullptr) || (command_length == 0) ||

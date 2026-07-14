@@ -1,8 +1,8 @@
 /*
- * @Description: None
+ * @Description: 声明 LR11xx 与 LR20xx 共用的传输上下文
  * @Author: LILYGO_L
- * @Date: 2026-07-10
- * @LastEditTime: 2026-07-12 16:30:56
+ * @Date: 2026-07-10 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #pragma once
@@ -14,9 +14,9 @@
 
 #include "bus/bus_guide.h"
 
-namespace semtech_cpp_bus_driver {
+namespace usp_cpp_bus_driver {
 // LR11xx 和 LR20xx HAL 入口共用的传输状态
-struct RadioContext {
+struct LrContext {
   // 驱动低电平有效的硬件复位信号
   using ResetCallback = std::function<bool(bool)>;
 
@@ -134,4 +134,4 @@ struct RadioContext {
   bool DirectRead(const uint8_t* command, size_t command_length, uint8_t* data,
       size_t data_length);
 };
-}  // namespace semtech_cpp_bus_driver
+}  // namespace usp_cpp_bus_driver

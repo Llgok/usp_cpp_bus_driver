@@ -1,13 +1,14 @@
-<h1 align="center">semtech_cpp_bus_driver</h1>
+<h1 align="center">usp_cpp_bus_driver</h1>
 
 ## **English | [Chinese](./README_CN.md)**
 
-[![Release](https://img.shields.io/github/v/release/Llgok/semtech_cpp_bus_driver?style=flat-square)](https://github.com/Llgok/semtech_cpp_bus_driver/releases)
-[![License](https://img.shields.io/github/license/Llgok/semtech_cpp_bus_driver?style=flat-square)](./LICENSE)
+[![Release](https://img.shields.io/github/v/release/Llgok/usp_cpp_bus_driver?style=flat-square)](https://github.com/Llgok/usp_cpp_bus_driver/releases)
+[![License](https://img.shields.io/github/license/Llgok/usp_cpp_bus_driver?style=flat-square)](./LICENSE)
 [![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.5.3%2B-ff6f00?style=flat-square)](https://github.com/espressif/esp-idf)
 
-`semtech_cpp_bus_driver` is an ESP-IDF bridge between the official Semtech
-radio drivers and [`cpp_bus_driver`](https://github.com/Llgok/cpp_bus_driver).
+`usp_cpp_bus_driver` is an ESP-IDF bridge between the official USP radio
+driver and
+[`cpp_bus_driver`](https://github.com/Llgok/cpp_bus_driver).
 It manages transport resources with C++ objects and implements the low-level
 hardware interfaces required by the official drivers.
 
@@ -22,7 +23,8 @@ hardware interfaces required by the official drivers.
 
 - Uses `cpp_bus_driver` for SPI, GPIO, delay, and logging services.
 - Adapts reset, interrupts, timers, BUSY waits, and sleep wake-up operations.
-- Reuses the official Semtech APIs through `context()` and `Invoke()` instead
+- Reuses the official USP APIs through `context()` and `Invoke()`
+  instead
   of duplicating protocol interfaces.
 - Allows applications to supply board-specific operations through callbacks.
 - Applies a timeout to BUSY waits to prevent permanent blocking.
@@ -49,7 +51,7 @@ directory:
 your_project/
 ├── components/
 │   ├── cpp_bus_driver/
-│   └── semtech_cpp_bus_driver/
+│   └── usp_cpp_bus_driver/
 ├── main/
 └── CMakeLists.txt
 ```
@@ -57,7 +59,7 @@ your_project/
 Then include the unified entry header:
 
 ```cpp
-#include "semtech_cpp_bus_driver_library.h"
+#include "usp_cpp_bus_driver_library.h"
 ```
 
 When only part of the component is needed, include the relevant aggregate
@@ -68,7 +70,7 @@ points.
 
 ```bash
 git submodule add https://github.com/Llgok/cpp_bus_driver.git
-git submodule add https://github.com/Llgok/semtech_cpp_bus_driver.git
+git submodule add https://github.com/Llgok/usp_cpp_bus_driver.git
 git submodule update --init --recursive
 ```
 
@@ -84,7 +86,7 @@ object:
 #include <memory>
 
 #include "cpp_bus_driver_library.h"
-#include "semtech_cpp_bus_driver_library.h"
+#include "usp_cpp_bus_driver_library.h"
 
 auto spi_bus = std::make_shared<cpp_bus_driver::HardwareSpi>(
     mosi_pin, sclk_pin, miso_pin, SPI2_HOST, 0);
@@ -114,10 +116,10 @@ radio.Deinit(false);
 ```
 
 After initialization, use the component's convenience interface or call the
-official Semtech APIs through `Invoke()` or `context()`.
+official USP APIs through `Invoke()` or `context()`.
 
 Set hardware parameters, initialization order, and protocol configuration
-according to the target board and the official Semtech documentation.
+according to the target board and the official USP documentation.
 
 ## Notes
 
@@ -133,5 +135,5 @@ initialization.
 - The application implements reset, wake-up, interrupt, and other callbacks
   according to its hardware.
 
-Refer to the public headers and the official Semtech driver documentation for
+Refer to the public headers and the official USP documentation for
 detailed APIs.

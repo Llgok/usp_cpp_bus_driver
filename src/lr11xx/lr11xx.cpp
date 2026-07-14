@@ -1,8 +1,8 @@
 /*
- * @Description: None
+ * @Description: 实现 USP LR11xx 驱动的 C++ 桥接
  * @Author: LILYGO_L
- * @Date: 2026-07-10
- * @LastEditTime: 2026-07-12 12:32:29
+ * @Date: 2026-07-10 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #include "lr11xx/lr11xx_driver.h"
@@ -10,14 +10,14 @@
 #include <limits>
 #include <utility>
 
-#include "common/radio_context.h"
+#include "common/lr_context.h"
 #include "smtc_rac_lib/radio_drivers/lr11xx_driver/src/lr11xx_hal.h"
 
-namespace semtech_cpp_bus_driver {
+namespace usp_cpp_bus_driver {
 Lr11xx::Lr11xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
     int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback,
     WakeupCallback wakeup_callback)
-    : context_(std::make_unique<RadioContext>()) {
+    : context_(std::make_unique<LrContext>()) {
   context_->bus = std::move(bus);
   context_->busy_pin = busy_pin;
   context_->cs_pin = cs_pin;
@@ -125,4 +125,4 @@ bool Lr11xx::initialized() const { return context_->initialized; }
 const void* Lr11xx::context() {
   return initialized() ? context_.get() : nullptr;
 }
-}  // namespace semtech_cpp_bus_driver
+}  // namespace usp_cpp_bus_driver

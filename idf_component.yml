@@ -1,7 +1,7 @@
 version: "1.0.0"
 license: "GPL-3.0"
-description: "Semtech radio driver bridge for cpp_bus_driver."
-url: https://github.com/Llgok/semtech_cpp_bus_driver
+description: "USP official radio driver bridge for cpp_bus_driver."
+url: https://github.com/Llgok/usp_cpp_bus_driver
 
 dependencies:
   idf: ">=5.5.3"

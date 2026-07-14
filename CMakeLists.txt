@@ -1,15 +1,9 @@
-set(semtech_source_root "${CMAKE_CURRENT_LIST_DIR}/third_party/usp")
-set(swl2001_source_root "${CMAKE_CURRENT_LIST_DIR}/third_party/SWL2001")
+set(usp_source_root "${CMAKE_CURRENT_LIST_DIR}/third_party/usp")
 set(
         radio_driver_root
-        "${semtech_source_root}/smtc_rac_lib/radio_drivers"
-)
-set(
-        swl2001_radio_driver_root
-        "${swl2001_source_root}/lbm_lib/smtc_modem_core/radio_drivers"
+        "${usp_source_root}/smtc_rac_lib/radio_drivers"
 )
 set(sx126x_driver_dir "${radio_driver_root}/sx126x_driver/src")
-set(sx127x_driver_dir "${swl2001_radio_driver_root}/sx127x_driver/src")
 set(lr11xx_driver_dir "${radio_driver_root}/lr11xx_driver/src")
 set(lr20xx_driver_inc_dir "${radio_driver_root}/lr20xx_driver/inc")
 set(lr20xx_driver_src_dir "${radio_driver_root}/lr20xx_driver/src")
@@ -21,11 +15,6 @@ set(
         "${sx126x_driver_dir}/sx126x_bpsk.c"
         "${sx126x_driver_dir}/sx126x_driver_version.c"
         "${sx126x_driver_dir}/sx126x_lr_fhss.c"
-)
-
-set(
-        sx127x_driver_sources
-        "${sx127x_driver_dir}/sx127x.c"
 )
 
 set(
@@ -71,21 +60,16 @@ idf_component_register(
         "src/lr11xx/lr11xx_hal.cpp"
         "src/lr20xx/lr20xx.cpp"
         "src/lr20xx/lr20xx_hal.cpp"
-        "src/common/radio_context.cpp"
+        "src/common/lr_context.cpp"
         "src/sx126x/sx126x.cpp"
         "src/sx126x/sx126x_hal.cpp"
-        "src/sx127x/sx127x.cpp"
-        "src/sx127x/sx127x_context.cpp"
-        "src/sx127x/sx127x_hal.cpp"
         ${sx126x_driver_sources}
-        ${sx127x_driver_sources}
         ${lr11xx_driver_sources}
         ${lr20xx_driver_sources}
         INCLUDE_DIRS
         "src"
-        "${semtech_source_root}"
+        "${usp_source_root}"
         "${sx126x_driver_dir}"
-        "${sx127x_driver_dir}"
         "${lr11xx_driver_dir}"
         "${lr20xx_driver_inc_dir}"
         REQUIRES
@@ -101,6 +85,4 @@ target_compile_definitions(
         ${COMPONENT_LIB}
         PRIVATE
         LR11XX_DISABLE_WARNINGS
-        SX1272
-        SX1276
 )

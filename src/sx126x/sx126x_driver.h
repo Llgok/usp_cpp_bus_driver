@@ -1,8 +1,8 @@
 /*
- * @Description: None
+ * @Description: 声明 USP SX126x 驱动的 C++ 桥接接口
  * @Author: LILYGO_L
- * @Date: 2026-07-12
- * @LastEditTime: 2026-07-12 12:32:29
+ * @Date: 2026-07-12 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #pragma once
@@ -20,7 +20,7 @@
 #include "smtc_rac_lib/radio_drivers/sx126x_driver/src/sx126x_driver_version.h"
 #include "smtc_rac_lib/radio_drivers/sx126x_driver/src/sx126x_lr_fhss.h"
 
-namespace semtech_cpp_bus_driver {
+namespace usp_cpp_bus_driver {
 
 struct Sx126xContext;
 
@@ -204,7 +204,7 @@ class Sx126x final : public DirectDriver<Sx126x> {
   bool GetChipStatus(sx126x_chip_status_t& status) const;
 
   /**
-   * @brief 返回 Semtech SX126x 官方函数使用的不透明上下文
+   * @brief 返回 USP SX126x 官方函数使用的不透明上下文
    * @return 已初始化时返回有效上下文，否则返回 nullptr
    */
   const void* context();
@@ -220,8 +220,8 @@ class Sx126x final : public DirectDriver<Sx126x> {
       const LoraConfig& config, uint8_t payload_length) const;
 
   /**
-   * @brief 将 Semtech 状态码转换为布尔结果并记录失败信息
-   * @param status Semtech 官方函数返回状态
+   * @brief 将 USP 状态码转换为布尔结果并记录失败信息
+   * @param status USP 官方函数返回状态
    * @param operation 日志中使用的操作名称
    * @return status 为 SX126X_STATUS_OK 时返回 true
    */
@@ -234,4 +234,4 @@ class Sx126x final : public DirectDriver<Sx126x> {
   bool lora_configured_ = false;    // ConfigureLora() 全部成功后为 true。
 };
 
-}  // namespace semtech_cpp_bus_driver
+}  // namespace usp_cpp_bus_driver

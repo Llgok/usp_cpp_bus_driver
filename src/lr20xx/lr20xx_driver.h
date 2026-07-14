@@ -1,8 +1,8 @@
 /*
- * @Description: None
+ * @Description: 声明 USP LR20xx 驱动的 C++ 桥接接口
  * @Author: LILYGO_L
- * @Date: 2026-07-12
- * @LastEditTime: 2026-07-12 16:30:56
+ * @Date: 2026-07-12 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #pragma once
@@ -33,9 +33,9 @@
 #include "lr20xx_system.h"
 #include "lr20xx_workarounds.h"
 
-namespace semtech_cpp_bus_driver {
+namespace usp_cpp_bus_driver {
 
-struct RadioContext;
+struct LrContext;
 
 /**
  * @brief 管理 LR20xx SPI 传输资源并封装常用 LoRa 操作
@@ -168,16 +168,16 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
   bool initialized() const;
 
   /**
-   * @brief 返回 Semtech LR20xx 官方函数使用的不透明上下文
+   * @brief 返回 USP LR20xx 官方函数使用的不透明上下文
    * @return 已初始化时返回有效上下文，否则返回 nullptr
    */
   const void* context();
 
  private:
   // 持有 SPI、BUSY、复位和休眠唤醒传输状态。
-  std::unique_ptr<RadioContext> context_;
+  std::unique_ptr<LrContext> context_;
   // ConfigureLora() 全部成功后为 true。
   bool lora_configured_ = false;
 };
 
-}  // namespace semtech_cpp_bus_driver
+}  // namespace usp_cpp_bus_driver

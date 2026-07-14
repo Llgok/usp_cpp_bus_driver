@@ -1,17 +1,17 @@
 /*
- * @Description: None
+ * @Description: 实现 USP SX126x 驱动的 C++ 桥接
  * @Author: LILYGO_L
- * @Date: 2026-07-10
- * @LastEditTime: 2026-07-12 12:32:29
+ * @Date: 2026-07-10 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #include "sx126x/sx126x_driver.h"
 
 #include <utility>
 
-#include "common/cpp_bus_driver_context.h"
+#include "sx126x/sx126x_context.h"
 
-namespace semtech_cpp_bus_driver {
+namespace usp_cpp_bus_driver {
 namespace {
 constexpr uint16_t kReceiveIrqMask = SX126X_IRQ_RX_DONE | SX126X_IRQ_TIMEOUT |
                                      SX126X_IRQ_CRC_ERROR |
@@ -327,4 +327,4 @@ bool Sx126x::CheckStatus(sx126x_status_t status, const char* operation) const {
   }
   return false;
 }
-}  // namespace semtech_cpp_bus_driver
+}  // namespace usp_cpp_bus_driver

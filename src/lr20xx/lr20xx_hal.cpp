@@ -1,13 +1,13 @@
 /*
- * @Description: None
+ * @Description: 实现 USP LR20xx 硬件抽象层
  * @Author: LILYGO_L
- * @Date: 2026-07-10
- * @LastEditTime: 2026-07-12 16:30:56
+ * @Date: 2026-07-10 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #include "smtc_rac_lib/radio_drivers/lr20xx_driver/inc/lr20xx_hal.h"
 
-#include "common/radio_context.h"
+#include "common/lr_context.h"
 
 namespace {
 constexpr uint8_t kSystemCommandGroup = 0x01;
@@ -16,13 +16,13 @@ constexpr uint32_t kResetTimeMs = 1;
 constexpr uint32_t kStartupTimeMs = 1;
 
 /**
- * @brief 将 Semtech 不透明上下文转换为桥接驱动传输上下文
- * @param context Semtech 驱动传入的不透明上下文
+ * @brief 将 USP 不透明上下文转换为桥接驱动传输上下文
+ * @param context USP 驱动传入的不透明上下文
  * @return 可写的桥接驱动传输上下文
  */
-semtech_cpp_bus_driver::RadioContext* GetContext(const void* context) {
-  return const_cast<semtech_cpp_bus_driver::RadioContext*>(
-      static_cast<const semtech_cpp_bus_driver::RadioContext*>(context));
+usp_cpp_bus_driver::LrContext* GetContext(const void* context) {
+  return const_cast<usp_cpp_bus_driver::LrContext*>(
+      static_cast<const usp_cpp_bus_driver::LrContext*>(context));
 }
 }  // namespace
 

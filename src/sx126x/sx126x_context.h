@@ -1,8 +1,8 @@
 /*
- * @Description: None
+ * @Description: 声明 USP SX126x 传输上下文
  * @Author: LILYGO_L
- * @Date: 2026-07-10
- * @LastEditTime: 2026-07-12 12:32:29
+ * @Date: 2026-07-10 00:00:00
+ * @LastEditTime: 2026-07-15 01:12:34
  * @License: GPL 3.0
  */
 #pragma once
@@ -13,8 +13,8 @@
 
 #include "bus/bus_guide.h"
 
-namespace semtech_cpp_bus_driver {
-// Semtech SX126x HAL 实现所需的传输状态
+namespace usp_cpp_bus_driver {
+// USP SX126x HAL 实现所需的传输状态
 struct Sx126xContext {
   // 与应用程序共享的 SPI 传输对象
   std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus;
@@ -44,4 +44,4 @@ struct Sx126xContext {
    */
   bool Wakeup();
 };
-}  // namespace semtech_cpp_bus_driver
+}  // namespace usp_cpp_bus_driver
