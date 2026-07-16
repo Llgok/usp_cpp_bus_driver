@@ -56,6 +56,19 @@ your_project/
 └── CMakeLists.txt
 ```
 
+Clone commands:
+
+```bash
+git clone https://github.com/Llgok/cpp_bus_driver.git
+git clone --recursive https://github.com/Llgok/usp_cpp_bus_driver.git
+```
+
+When cloning this repository, please also fetch its submodules. If you did not use `--recursive` when cloning, initialize the submodules manually:
+
+```bash
+git submodule update --init --recursive
+```
+
 Then include the unified entry header:
 
 ```cpp
