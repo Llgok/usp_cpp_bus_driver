@@ -2,7 +2,7 @@
  * @Description: 实现 USP SX126x 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-16 10:51:36
  * @License: GPL 3.0
  */
 #include "sx126x/sx126x_driver.h"
@@ -127,20 +127,39 @@ bool Sx126x::Deinit(bool delete_bus) {
   if (!initialized()) {
     return true;
   }
-  if (context_->bus == nullptr || !context_->bus->Deinit(delete_bus)) {
+  if (context_->bus == nullptr) {
     return false;
   }
+  const bool result = context_->bus->Deinit(delete_bus);
   lora_configured_ = false;
   context_->initialized = false;
   context_->sleeping = false;
-  return true;
+  return result;
 }
 
-bool Sx126x::initialized() const { return context_->initialized; }
+bool Sx126x::SetSleep() {
+  if (!initialized()) {
+    return false;
+  }
+  if (context_->sleeping) {
+    return true;
+  }
+  return CheckStatus(
+             sx126x_set_standby(context_.get(), SX126X_STANDBY_CFG_RC),
+             "sx126x_set_standby") &&
+         CheckStatus(
+             sx126x_set_sleep(context_.get(), SX126X_SLEEP_CFG_WARM_START),
+             "sx126x_set_sleep");
+}
 
-bool Sx126x::ConfigureLora() { return ConfigureLora(LoraConfig{}); }
+bool Sx126x::Wakeup() {
+  return initialized() &&
+         CheckStatus(sx126x_wakeup(context_.get()), "sx126x_wakeup");
+}
 
-bool Sx126x::ConfigureLora(const LoraConfig& config) {
+bool Sx126x::Configure() { return Configure(LoraConfig{}); }
+
+bool Sx126x::Configure(const LoraConfig& config) {
   lora_configured_ = false;
   const uint32_t bandwidth_hz = sx126x_get_lora_bw_in_hz(config.bandwidth);
   const auto spreading_factor = static_cast<uint32_t>(config.spreading_factor);
@@ -297,10 +316,6 @@ bool Sx126x::GetChipStatus(sx126x_chip_status_t& status) const {
   return initialized() &&
          CheckStatus(
              sx126x_get_status(context_.get(), &status), "sx126x_get_status");
-}
-
-const void* Sx126x::context() {
-  return initialized() ? context_.get() : nullptr;
 }
 
 bool Sx126x::ApplyPacketParams(

@@ -2,7 +2,7 @@
  * @Description: 声明 USP SX126x 传输上下文
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-16 10:47:02
  * @License: GPL 3.0
  */
 #pragma once
@@ -24,7 +24,7 @@ struct Sx126xContext {
   int32_t busy_pin = -1;
   // 已配置的 SPI 时钟频率，单位为 Hz
   int32_t frequency_hz = -1;
-  // SPI 传输对象用作 NSS 的 GPIO
+  // 由硬件 SPI 控制的低电平有效 NSS GPIO
   int32_t cs_pin = -1;
   // SPI 初始化成功后为 true
   bool initialized = false;
@@ -39,8 +39,8 @@ struct Sx126xContext {
   bool WaitWhileBusy(uint32_t timeout_us = 1000000) const;
 
   /**
-   * @brief SX126x 休眠时使用 GetStatus 命令将其唤醒
-   * @return 唤醒事务成功且 BUSY 变为低电平时返回 true
+   * @brief 读取芯片状态触发 SX126x 唤醒并等待 BUSY 变为低电平
+   * @return 唤醒时序执行成功时返回 true
    */
   bool Wakeup();
 };

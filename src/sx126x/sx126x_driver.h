@@ -2,7 +2,7 @@
  * @Description: 声明 USP SX126x 驱动的 C++ 桥接接口
  * @Author: LILYGO_L
  * @Date: 2026-07-12 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-16 10:51:36
  * @License: GPL 3.0
  */
 #pragma once
@@ -19,10 +19,9 @@
 #include "smtc_rac_lib/radio_drivers/sx126x_driver/src/sx126x_bpsk.h"
 #include "smtc_rac_lib/radio_drivers/sx126x_driver/src/sx126x_driver_version.h"
 #include "smtc_rac_lib/radio_drivers/sx126x_driver/src/sx126x_lr_fhss.h"
+#include "sx126x/sx126x_context.h"
 
 namespace usp_cpp_bus_driver {
-
-struct Sx126xContext;
 
 /**
  * @brief 管理 SX126x SPI 资源并提供常用 LoRa 数据包操作
@@ -140,20 +139,32 @@ class Sx126x final : public DirectDriver<Sx126x> {
    * @brief 查询 SX126x 传输上下文是否可以使用
    * @return Init() 成功后至 Deinit() 完成前返回 true
    */
-  bool initialized() const;
+  bool initialized() const { return context_->initialized; }
+
+  /**
+   * @brief 让 SX126x 进入支持配置保持的休眠模式
+   * @return 待机和休眠命令均执行成功时返回 true
+   */
+  bool SetSleep();
+
+  /**
+   * @brief 从休眠模式唤醒 SX126x
+   * @return 唤醒事务执行成功时返回 true
+   */
+  bool Wakeup();
 
   /**
    * @brief 应用默认 LoRa 配置
    * @return 所有官方配置命令成功时返回 true
    */
-  bool ConfigureLora();
+  bool Configure();
 
   /**
    * @brief 应用指定 LoRa、射频和功放配置
    * @param config 完整 LoRa 配置
    * @return 参数有效且所有官方配置命令成功时返回 true
    */
-  bool ConfigureLora(const LoraConfig& config);
+  bool Configure(const LoraConfig& config);
 
   /**
    * @brief 启动 SX126x LoRa 连续接收
@@ -207,7 +218,9 @@ class Sx126x final : public DirectDriver<Sx126x> {
    * @brief 返回 USP SX126x 官方函数使用的不透明上下文
    * @return 已初始化时返回有效上下文，否则返回 nullptr
    */
-  const void* context();
+  const void* context() {
+    return initialized() ? context_.get() : nullptr;
+  }
 
  private:
   /**
@@ -231,7 +244,7 @@ class Sx126x final : public DirectDriver<Sx126x> {
   std::unique_ptr<Sx126xContext> context_;
   HardwareConfig hardware_config_;  // 当前开发板硬件配置。
   LoraConfig lora_config_;          // 最近一次成功应用的 LoRa 配置。
-  bool lora_configured_ = false;    // ConfigureLora() 全部成功后为 true。
+  bool lora_configured_ = false;    // Configure() 全部成功后为 true。
 };
 
 }  // namespace usp_cpp_bus_driver

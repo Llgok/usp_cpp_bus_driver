@@ -2,7 +2,7 @@
  * @Description: 实现 USP SX126x 硬件抽象层与传输操作
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-16 10:47:02
  * @License: GPL 3.0
  */
 #include "sx126x_hal.h"
@@ -19,6 +19,8 @@ namespace {
 constexpr size_t kMaxTransactionSize = 272;
 constexpr uint8_t kGetStatusOpcode = 0xC0;
 constexpr uint8_t kSetSleepOpcode = 0x84;
+constexpr uint32_t kSleepTransitionTimeUs = 1000;
+constexpr uint32_t kWakeupTimeoutUs = 10000;
 }  // namespace
 
 bool Sx126xContext::WaitWhileBusy(uint32_t timeout_us) const {
@@ -41,14 +43,16 @@ bool Sx126xContext::Wakeup() {
     return WaitWhileBusy();
   }
 
-  const std::array<uint8_t, 2> write_buffer = {kGetStatusOpcode, 0};
-  std::array<uint8_t, 2> read_buffer = {};
-  if (!bus->WriteRead(
-          write_buffer.data(), read_buffer.data(), write_buffer.size())) {
+  uint8_t status = 0;
+  if (!bus->Read(kGetStatusOpcode, &status)) {
+    return false;
+  }
+  bus->DelayMs(1);
+  if (!WaitWhileBusy(kWakeupTimeoutUs)) {
     return false;
   }
   sleeping = false;
-  return WaitWhileBusy();
+  return true;
 }
 }  // namespace usp_cpp_bus_driver
 
@@ -82,12 +86,15 @@ extern "C" sx126x_hal_status_t sx126x_hal_write(const void* context,
   if (data_length != 0) {
     std::memcpy(buffer.data() + command_length, data, data_length);
   }
-  if (!local_context->bus->Write(buffer.data(), command_length + data_length)) {
+  if (!local_context->bus->Write(
+          buffer.data(), command_length + data_length)) {
     return SX126X_HAL_STATUS_ERROR;
   }
 
   if (command[0] == usp_cpp_bus_driver::kSetSleepOpcode) {
     local_context->sleeping = true;
+    local_context->bus->DelayUs(
+        usp_cpp_bus_driver::kSleepTransitionTimeUs);
     return SX126X_HAL_STATUS_OK;
   }
   return local_context->WaitWhileBusy() ? SX126X_HAL_STATUS_OK
@@ -156,7 +163,7 @@ extern "C" sx126x_hal_status_t sx126x_hal_reset(const void* context) {
 }
 
 /**
- * @brief 使用 GetStatus 命令唤醒 SX126x，并等待 BUSY 拉低
+ * @brief 读取芯片状态唤醒 SX126x，并等待 BUSY 拉低
  * @param context SX126x 桥接驱动上下文
  * @return HAL 唤醒执行结果
  */

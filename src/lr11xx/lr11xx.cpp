@@ -2,7 +2,7 @@
  * @Description: 实现 USP LR11xx 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-16 10:53:04
  * @License: GPL 3.0
  */
 #include "lr11xx/lr11xx_driver.h"
@@ -70,7 +70,7 @@ bool Lr11xx::Wakeup() {
          lr11xx_hal_wakeup(context_.get()) == LR11XX_HAL_STATUS_OK;
 }
 
-bool Lr11xx::ConfigureLora(const LoraConfig& config) {
+bool Lr11xx::Configure(const LoraConfig& config) {
   lora_configured_ = false;
   if (!initialized() || config.frequency_hz == 0) {
     return false;
@@ -120,9 +120,4 @@ bool Lr11xx::StartTransmit(uint32_t timeout_ms) {
          lr11xx_radio_set_tx(context(), timeout_ms) == LR11XX_STATUS_OK;
 }
 
-bool Lr11xx::initialized() const { return context_->initialized; }
-
-const void* Lr11xx::context() {
-  return initialized() ? context_.get() : nullptr;
-}
 }  // namespace usp_cpp_bus_driver

@@ -2,7 +2,7 @@
  * @Description: 声明 USP LR11xx 驱动的 C++ 桥接接口
  * @Author: LILYGO_L
  * @Date: 2026-07-12 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-16 10:53:04
  * @License: GPL 3.0
  */
 #pragma once
@@ -14,6 +14,7 @@
 
 #include "bus/bus_guide.h"
 #include "common/direct_driver.h"
+#include "common/lr_context.h"
 #include "lr11xx_bootloader.h"
 #include "lr11xx_crypto_engine.h"
 #include "lr11xx_driver_version.h"
@@ -27,8 +28,6 @@
 #include "lr11xx_wifi.h"
 
 namespace usp_cpp_bus_driver {
-
-struct LrContext;
 
 /**
  * @brief 管理 LR11xx SPI 传输资源并封装常用 LoRa 操作
@@ -122,7 +121,7 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
    * @param config 完整 LoRa、射频和功放配置
    * @return 所有官方配置命令成功时返回 true
    */
-  bool ConfigureLora(const LoraConfig& config);
+  bool Configure(const LoraConfig& config);
 
   /**
    * @brief 将待发送数据写入 LR11xx 无线缓冲区
@@ -159,18 +158,20 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
    * @brief 查询 LR11xx 传输上下文是否可以使用
    * @return Init() 成功后至 Deinit() 完成前返回 true
    */
-  bool initialized() const;
+  bool initialized() const { return context_->initialized; }
 
   /**
    * @brief 返回 USP LR11xx 官方函数使用的不透明上下文
    * @return 已初始化时返回有效上下文，否则返回 nullptr
    */
-  const void* context();
+  const void* context() {
+    return initialized() ? context_.get() : nullptr;
+  }
 
  private:
   // 持有 SPI、BUSY、复位和休眠唤醒传输状态。
   std::unique_ptr<LrContext> context_;
-  // ConfigureLora() 全部成功后为 true。
+  // Configure() 全部成功后为 true。
   bool lora_configured_ = false;
 };
 

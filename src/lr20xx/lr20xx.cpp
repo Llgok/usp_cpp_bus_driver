@@ -2,7 +2,7 @@
  * @Description: 实现 USP LR20xx 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-16 10:53:04
  * @License: GPL 3.0
  */
 #include "lr20xx/lr20xx_driver.h"
@@ -73,7 +73,7 @@ bool Lr20xx::Wakeup() {
          lr20xx_hal_wakeup(context_.get()) == LR20XX_HAL_STATUS_OK;
 }
 
-bool Lr20xx::ConfigureLora(const LoraConfig& config) {
+bool Lr20xx::Configure(const LoraConfig& config) {
   lora_configured_ = false;
   if (!initialized() || config.frequency_hz == 0) {
     return false;
@@ -124,9 +124,4 @@ bool Lr20xx::StartTransmit(uint32_t timeout_ms) {
          lr20xx_radio_common_set_tx(context(), timeout_ms) == LR20XX_STATUS_OK;
 }
 
-bool Lr20xx::initialized() const { return context_->initialized; }
-
-const void* Lr20xx::context() {
-  return initialized() ? context_.get() : nullptr;
-}
 }  // namespace usp_cpp_bus_driver
