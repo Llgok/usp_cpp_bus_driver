@@ -50,6 +50,18 @@ your_project/
 └── CMakeLists.txt
 ```
 
+克隆本仓库时请同时拉取子模块：
+
+```bash
+git clone --recursive https://github.com/Llgok/usp_cpp_bus_driver.git
+```
+
+如果克隆时没有使用 `--recursive`，请手动初始化子模块：
+
+```bash
+git submodule update --init --recursive
+```
+
 然后在代码中包含统一入口：
 
 ```cpp
