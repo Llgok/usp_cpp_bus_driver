@@ -46,8 +46,6 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
  public:
   // false 表示断言硬件复位，true 表示释放硬件复位。
   using ResetCallback = std::function<bool(bool)>;
-  // 产生 NSS 低电平不少于 100 us 的芯片唤醒脉冲。
-  using WakeupCallback = std::function<bool()>;
 
   /**
    * @brief LR20xx LoRa 调制、数据包、射频和功放配置
@@ -67,7 +65,11 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
         .crc = LR20XX_RADIO_LORA_CRC_ENABLED,
         .iq = LR20XX_RADIO_LORA_IQ_STANDARD,
     };  // LoRa 数据包参数。
-    uint8_t sync_word = 0x12;              // LoRa 同步字。
+    uint8_t sync_word = 0x12;  // LoRa 同步字。
+    lr20xx_radio_common_rx_path_t rx_path =
+        LR20XX_RADIO_COMMON_RX_PATH_LF;  // 接收射频路径。
+    lr20xx_radio_common_rx_path_boost_mode_t rx_boost_mode =
+        LR20XX_RADIO_COMMON_RX_PATH_BOOST_MODE_7;  // 接收增益增强模式。
     lr20xx_radio_common_pa_cfg_t pa = {};  // 功率放大器配置。
     int8_t output_power_half_dbm = 0;      // 发射功率，单位为 0.5 dBm。
     lr20xx_radio_common_ramp_time_t ramp_time =
@@ -80,11 +82,9 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
    * @param busy_pin 芯片 BUSY 信号连接的 GPIO
    * @param cs_pin SPI 片选使用的 GPIO
    * @param reset_callback 控制开发板硬件复位信号的回调
-   * @param wakeup_callback 产生 NSS 低电平不少于 100 us 的可选回调
    */
   explicit Lr20xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
-      int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback,
-      WakeupCallback wakeup_callback = {});
+      int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback);
 
   /**
    * @brief 释放当前对象仍持有的 SPI 设备资源
@@ -118,8 +118,15 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
   bool Reset();
 
   /**
-   * @brief 产生 NSS 唤醒脉冲并等待 BUSY 变为低电平
-   * @return 芯片已经初始化且唤醒成功时返回 true
+   * @brief 让 LR20xx 进入休眠模式并释放当前硬件 SPI Device
+   * @param config LR20xx 官方休眠配置
+   * @return 休眠命令和 SPI Device 释放均成功时返回 true
+   */
+  bool SetSleep(const lr20xx_system_sleep_cfg_t& config);
+
+  /**
+   * @brief 使用官方 NSS 脉冲唤醒 LR20xx 并恢复硬件 SPI Device
+   * @return NSS 唤醒、SPI Device 恢复和 BUSY 检查均成功时返回 true
    */
   bool Wakeup();
 
@@ -148,7 +155,8 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
 
   /**
    * @brief 启动 LR20xx 数据包接收
-   * @param timeout_ms 接收超时时间，单位为 ms，零表示不使用超时
+   * @param timeout_ms 接收超时时间，单位为 ms；零表示无定时超时的单包接收，
+   * 收到一包后退出接收
    * @return 接收命令被芯片接受时返回 true
    */
   bool StartReceive(uint32_t timeout_ms);

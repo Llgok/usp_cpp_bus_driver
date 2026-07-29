@@ -142,14 +142,17 @@ bool Sx126x::SetSleep() {
     return false;
   }
   if (context_->sleeping) {
-    return true;
+    return context_->bus != nullptr && context_->bus->Deinit(false);
   }
-  return CheckStatus(
-             sx126x_set_standby(context_.get(), SX126X_STANDBY_CFG_RC),
-             "sx126x_set_standby") &&
-         CheckStatus(
-             sx126x_set_sleep(context_.get(), SX126X_SLEEP_CFG_WARM_START),
-             "sx126x_set_sleep");
+  if (!CheckStatus(
+          sx126x_set_standby(context_.get(), SX126X_STANDBY_CFG_RC),
+          "sx126x_set_standby") ||
+      !CheckStatus(
+          sx126x_set_sleep(context_.get(), SX126X_SLEEP_CFG_WARM_START),
+          "sx126x_set_sleep")) {
+    return false;
+  }
+  return context_->bus != nullptr && context_->bus->Deinit(false);
 }
 
 bool Sx126x::Wakeup() {

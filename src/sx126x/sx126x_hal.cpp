@@ -17,10 +17,8 @@
 namespace usp_cpp_bus_driver {
 namespace {
 constexpr size_t kMaxTransactionSize = 272;
-constexpr uint8_t kGetStatusOpcode = 0xC0;
 constexpr uint8_t kSetSleepOpcode = 0x84;
 constexpr uint32_t kSleepTransitionTimeUs = 1000;
-constexpr uint32_t kWakeupTimeoutUs = 10000;
 }  // namespace
 
 bool Sx126xContext::WaitWhileBusy(uint32_t timeout_us) const {
@@ -43,14 +41,24 @@ bool Sx126xContext::Wakeup() {
     return WaitWhileBusy();
   }
 
-  uint8_t status = 0;
-  if (!bus->Read(kGetStatusOpcode, &status)) {
+  if ((bus == nullptr) || (cs_pin < 0) || (frequency_hz <= 0) ||
+      !bus->Deinit(false)) {
     return false;
   }
-  bus->DelayMs(1);
-  if (!WaitWhileBusy(kWakeupTimeoutUs)) {
+
+  // USP 官方示例在唤醒期间保持 NSS 为低电平，直到 BUSY 拉低。
+  if (!bus->SetGpioMode(cs_pin, cpp_bus_driver::Tool::GpioMode::kOutput) ||
+      !bus->GpioWrite(cs_pin, 1) || !bus->GpioWrite(cs_pin, 0)) {
+    bus->GpioWrite(cs_pin, 1);
     return false;
   }
+
+  const bool ready = WaitWhileBusy();
+  const bool released = bus->GpioWrite(cs_pin, 1);
+  if (!ready || !released || !bus->Init(frequency_hz, cs_pin)) {
+    return false;
+  }
+
   sleeping = false;
   return true;
 }

@@ -79,14 +79,33 @@ bool LrContext::Wakeup() {
   if (!sleeping) {
     return WaitWhileBusy();
   }
-  if (!wakeup_callback) {
-    bus->LogMessage(cpp_bus_driver::Tool::LogLevel::kError, __FILE__, __LINE__,
-        "A chip-select wakeup callback is required\n");
-    return false;
+
+  if (wakeup_callback) {
+    if (!wakeup_callback()) {
+      return false;
+    }
+  } else {
+    if ((cs_pin < 0) || (frequency_hz <= 0) || !bus->Deinit(false)) {
+      return false;
+    }
+
+    bool result =
+        bus->SetGpioMode(cs_pin, cpp_bus_driver::Tool::GpioMode::kOutput) &&
+        bus->GpioWrite(cs_pin, 1) && bus->GpioWrite(cs_pin, 0);
+    if (!result) {
+      bus->GpioWrite(cs_pin, 1);
+      return false;
+    }
+
+    if (wakeup_pulse_us != 0) {
+      bus->DelayUs(wakeup_pulse_us);
+    }
+    result = bus->GpioWrite(cs_pin, 1);
+    if (!result || !bus->Init(frequency_hz, cs_pin)) {
+      return false;
+    }
   }
-  if (!wakeup_callback()) {
-    return false;
-  }
+
   if (!WaitWhileBusy()) {
     return false;
   }

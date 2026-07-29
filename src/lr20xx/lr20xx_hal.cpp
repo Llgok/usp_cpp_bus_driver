@@ -40,7 +40,7 @@ extern "C" lr20xx_hal_status_t lr20xx_hal_reset(const void* context) {
 }
 
 /**
- * @brief 调用开发板提供的 LR20xx NSS 唤醒操作
+ * @brief 执行 LR20xx NSS 唤醒并恢复硬件 SPI Device
  * @param context LR20xx 桥接驱动上下文
  * @return HAL 唤醒执行结果
  */
@@ -73,6 +73,9 @@ extern "C" lr20xx_hal_status_t lr20xx_hal_write(const void* context,
       (command[1] == kSetSleepOpcode)) {
     radio->sleeping = true;
     radio->bus->DelayUs(500);
+    if (!radio->bus->Deinit(false)) {
+      return LR20XX_HAL_STATUS_ERROR;
+    }
   }
   return LR20XX_HAL_STATUS_OK;
 }

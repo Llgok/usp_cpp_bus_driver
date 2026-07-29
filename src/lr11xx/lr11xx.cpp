@@ -86,6 +86,8 @@ bool Lr11xx::Configure(const LoraConfig& config) {
           LR11XX_STATUS_OK &&
       lr11xx_radio_set_lora_sync_word(context(), config.sync_word) ==
           LR11XX_STATUS_OK &&
+      lr11xx_radio_cfg_rx_boosted(context(), config.rx_boosted) ==
+          LR11XX_STATUS_OK &&
       lr11xx_radio_set_pa_cfg(context(), &config.pa) == LR11XX_STATUS_OK &&
       lr11xx_radio_set_tx_params(context(), config.output_power_dbm,
           config.ramp_time) == LR11XX_STATUS_OK;

@@ -39,7 +39,7 @@ struct Sx126xContext {
   bool WaitWhileBusy(uint32_t timeout_us = 1000000) const;
 
   /**
-   * @brief 读取芯片状态触发 SX126x 唤醒并等待 BUSY 变为低电平
+   * @brief 使用 NSS 低电平唤醒 SX126x 并恢复硬件 SPI Device
    * @return 唤醒时序执行成功时返回 true
    */
   bool Wakeup();

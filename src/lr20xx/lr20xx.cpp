@@ -15,17 +15,17 @@
 namespace usp_cpp_bus_driver {
 namespace {
 constexpr size_t kFifoCapacity = 256;
+constexpr uint32_t kWakeupPulseUs = 1000;
 }  // namespace
 
 Lr20xx::Lr20xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
-    int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback,
-    WakeupCallback wakeup_callback)
+    int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback)
     : context_(std::make_unique<LrContext>()) {
   context_->bus = std::move(bus);
   context_->busy_pin = busy_pin;
   context_->cs_pin = cs_pin;
   context_->reset_callback = std::move(reset_callback);
-  context_->wakeup_callback = std::move(wakeup_callback);
+  context_->wakeup_pulse_us = kWakeupPulseUs;
 }
 
 Lr20xx::~Lr20xx() {
@@ -68,6 +68,17 @@ bool Lr20xx::Reset() {
   return true;
 }
 
+bool Lr20xx::SetSleep(const lr20xx_system_sleep_cfg_t& config) {
+  if (!initialized()) {
+    return false;
+  }
+  if (context_->sleeping) {
+    return context_->bus != nullptr && context_->bus->Deinit(false);
+  }
+  return lr20xx_system_set_sleep_mode(context_.get(), &config, 0U) ==
+         LR20XX_STATUS_OK;
+}
+
 bool Lr20xx::Wakeup() {
   return initialized() &&
          lr20xx_hal_wakeup(context_.get()) == LR20XX_HAL_STATUS_OK;
@@ -88,6 +99,9 @@ bool Lr20xx::Configure(const LoraConfig& config) {
       lr20xx_radio_lora_set_packet_params(context(), &config.packet) ==
           LR20XX_STATUS_OK &&
       lr20xx_radio_lora_set_syncword(context(), config.sync_word) ==
+          LR20XX_STATUS_OK &&
+      lr20xx_radio_common_set_rx_path(
+          context(), config.rx_path, config.rx_boost_mode) ==
           LR20XX_STATUS_OK &&
       lr20xx_radio_common_set_pa_cfg(context(), &config.pa) ==
           LR20XX_STATUS_OK &&

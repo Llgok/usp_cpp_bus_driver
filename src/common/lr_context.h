@@ -29,6 +29,8 @@ struct LrContext {
   ResetCallback reset_callback;
   // 由应用程序提供的开发板唤醒操作
   WakeupCallback wakeup_callback;
+  // 未提供板级唤醒回调时，NSS 保持低电平的时间，单位为 us
+  uint32_t wakeup_pulse_us = 0;
   // 连接无线芯片 BUSY 输出的 GPIO
   int32_t busy_pin = -1;
   // 已配置的 SPI 时钟频率，单位为 Hz
@@ -76,7 +78,7 @@ struct LrContext {
   bool Reset(uint32_t reset_time_ms, uint32_t startup_time_ms);
 
   /**
-   * @brief 休眠命令执行后调用开发板唤醒操作
+   * @brief 休眠后执行 NSS 唤醒时序并恢复硬件 SPI Device
    * @return 唤醒完成且 BUSY 变为低电平时返回 true
    */
   bool Wakeup();

@@ -61,6 +61,7 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
         .iq = LR11XX_RADIO_LORA_IQ_STANDARD,
     };  // LoRa 数据包参数。
     uint8_t sync_word = 0x12;       // LoRa 同步字。
+    bool rx_boosted = true;         // 是否使用增强接收增益。
     lr11xx_radio_pa_cfg_t pa = {};  // 功率放大器配置。
     int8_t output_power_dbm = 0;    // 发射功率，单位 dBm。
     lr11xx_radio_ramp_time_t ramp_time =
@@ -142,7 +143,8 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
 
   /**
    * @brief 启动 LR11xx 数据包接收
-   * @param timeout_ms 接收超时时间，单位为 ms，零表示不使用超时
+   * @param timeout_ms 接收超时时间，单位为 ms；零表示无定时超时的单包接收，
+   * 收到一包后退出接收
    * @return 接收命令被芯片接受时返回 true
    */
   bool StartReceive(uint32_t timeout_ms);

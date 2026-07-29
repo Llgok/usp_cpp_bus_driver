@@ -143,13 +143,13 @@ class Sx126x final : public DirectDriver<Sx126x> {
 
   /**
    * @brief 让 SX126x 进入支持配置保持的休眠模式
-   * @return 待机和休眠命令均执行成功时返回 true
+   * @return 待机、休眠命令和 SPI Device 释放均成功时返回 true
    */
   bool SetSleep();
 
   /**
-   * @brief 从休眠模式唤醒 SX126x
-   * @return 唤醒事务执行成功时返回 true
+   * @brief 使用官方 NSS/BUSY 时序唤醒 SX126x 并恢复 SPI Device
+   * @return NSS 唤醒和 SPI Device 恢复均成功时返回 true
    */
   bool Wakeup();
 
