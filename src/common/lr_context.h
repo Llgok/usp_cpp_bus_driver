@@ -2,7 +2,7 @@
  * @Description: 声明 LR11xx 与 LR20xx 共用的传输上下文
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-31 15:35:00
  * @License: GPL 3.0
  */
 #pragma once
@@ -20,16 +20,11 @@ struct LrContext {
   // 驱动低电平有效的硬件复位信号
   using ResetCallback = std::function<bool(bool)>;
 
-  // 执行开发板相关的 NSS 唤醒脉冲
-  using WakeupCallback = std::function<bool()>;
-
   // 与应用程序共享的 SPI 传输对象
   std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus;
   // 由应用程序提供的开发板复位操作
   ResetCallback reset_callback;
-  // 由应用程序提供的开发板唤醒操作
-  WakeupCallback wakeup_callback;
-  // 未提供板级唤醒回调时，NSS 保持低电平的时间，单位为 us
+  // NSS 唤醒脉冲保持低电平的时间，单位为 us
   uint32_t wakeup_pulse_us = 0;
   // 连接无线芯片 BUSY 输出的 GPIO
   int32_t busy_pin = -1;

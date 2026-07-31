@@ -2,7 +2,7 @@
  * @Description: 实现 LR11xx 与 LR20xx 共用的传输操作
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-07-31 15:35:00
  * @License: GPL 3.0
  */
 #include "lr_context.h"
@@ -80,30 +80,24 @@ bool LrContext::Wakeup() {
     return WaitWhileBusy();
   }
 
-  if (wakeup_callback) {
-    if (!wakeup_callback()) {
-      return false;
-    }
-  } else {
-    if ((cs_pin < 0) || (frequency_hz <= 0) || !bus->Deinit(false)) {
-      return false;
-    }
+  if ((cs_pin < 0) || (frequency_hz <= 0) || !bus->Deinit(false)) {
+    return false;
+  }
 
-    bool result =
-        bus->SetGpioMode(cs_pin, cpp_bus_driver::Tool::GpioMode::kOutput) &&
-        bus->GpioWrite(cs_pin, 1) && bus->GpioWrite(cs_pin, 0);
-    if (!result) {
-      bus->GpioWrite(cs_pin, 1);
-      return false;
-    }
+  bool result =
+      bus->SetGpioMode(cs_pin, cpp_bus_driver::Tool::GpioMode::kOutput) &&
+      bus->GpioWrite(cs_pin, 1) && bus->GpioWrite(cs_pin, 0);
+  if (!result) {
+    bus->GpioWrite(cs_pin, 1);
+    return false;
+  }
 
-    if (wakeup_pulse_us != 0) {
-      bus->DelayUs(wakeup_pulse_us);
-    }
-    result = bus->GpioWrite(cs_pin, 1);
-    if (!result || !bus->Init(frequency_hz, cs_pin)) {
-      return false;
-    }
+  if (wakeup_pulse_us != 0) {
+    bus->DelayUs(wakeup_pulse_us);
+  }
+  result = bus->GpioWrite(cs_pin, 1);
+  if (!result || !bus->Init(frequency_hz, cs_pin)) {
+    return false;
   }
 
   if (!WaitWhileBusy()) {

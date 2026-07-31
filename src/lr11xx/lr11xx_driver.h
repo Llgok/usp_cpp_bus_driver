@@ -39,9 +39,6 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
  public:
   // false 表示断言硬件复位，true 表示释放硬件复位。
   using ResetCallback = std::function<bool(bool)>;
-  // 产生 NSS 低电平 100 us 的芯片唤醒脉冲。
-  using WakeupCallback = std::function<bool()>;
-
   /**
    * @brief LR11xx LoRa 调制、数据包、射频和功放配置
    */
@@ -74,11 +71,9 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
    * @param busy_pin 芯片 BUSY 信号连接的 GPIO
    * @param cs_pin SPI 片选使用的 GPIO
    * @param reset_callback 控制开发板硬件复位信号的回调
-   * @param wakeup_callback 产生 NSS 低电平 100 us 的可选回调
    */
   explicit Lr11xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
-      int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback,
-      WakeupCallback wakeup_callback = {});
+      int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback);
 
   /**
    * @brief 释放当前对象仍持有的 SPI 设备资源

@@ -2,7 +2,7 @@
  * @Description: 实现 USP LR11xx 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-16 10:53:04
+ * @LastEditTime: 2026-07-31 15:35:00
  * @License: GPL 3.0
  */
 #include "lr11xx/lr11xx_driver.h"
@@ -15,14 +15,12 @@
 
 namespace usp_cpp_bus_driver {
 Lr11xx::Lr11xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
-    int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback,
-    WakeupCallback wakeup_callback)
+    int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback)
     : context_(std::make_unique<LrContext>()) {
   context_->bus = std::move(bus);
   context_->busy_pin = busy_pin;
   context_->cs_pin = cs_pin;
   context_->reset_callback = std::move(reset_callback);
-  context_->wakeup_callback = std::move(wakeup_callback);
 }
 
 Lr11xx::~Lr11xx() {
