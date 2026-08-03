@@ -2,7 +2,7 @@
  * @Description: 声明 USP LR20xx 驱动的 C++ 桥接接口
  * @Author: LILYGO_L
  * @Date: 2026-07-12 00:00:00
- * @LastEditTime: 2026-07-16 10:53:04
+ * @LastEditTime: 2026-08-03 16:15:07
  * @License: GPL 3.0
  */
 #pragma once
@@ -70,8 +70,8 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
         LR20XX_RADIO_COMMON_RX_PATH_LF;  // 接收射频路径。
     lr20xx_radio_common_rx_path_boost_mode_t rx_boost_mode =
         LR20XX_RADIO_COMMON_RX_PATH_BOOST_MODE_7;  // 接收增益增强模式。
-    lr20xx_radio_common_pa_cfg_t pa = {};  // 功率放大器配置。
-    int8_t output_power_half_dbm = 0;      // 发射功率，单位为 0.5 dBm。
+    lr20xx_radio_common_pa_cfg_t pa = {};          // 功率放大器配置。
+    int8_t output_power_half_dbm = 0;              // 发射功率，单位为 0.5 dBm。
     lr20xx_radio_common_ramp_time_t ramp_time =
         LR20XX_RADIO_COMMON_RAMP_48_US;  // 功率放大器上升时间。
   };
@@ -178,9 +178,7 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
    * @brief 返回 USP LR20xx 官方函数使用的不透明上下文
    * @return 已初始化时返回有效上下文，否则返回 nullptr
    */
-  const void* context() {
-    return initialized() ? context_.get() : nullptr;
-  }
+  const void* context() { return initialized() ? context_.get() : nullptr; }
 
  private:
   // 持有 SPI、BUSY、复位和休眠唤醒传输状态。

@@ -2,7 +2,7 @@
  * @Description: 声明 USP LR11xx 驱动的 C++ 桥接接口
  * @Author: LILYGO_L
  * @Date: 2026-07-12 00:00:00
- * @LastEditTime: 2026-07-16 10:53:04
+ * @LastEditTime: 2026-08-03 16:15:02
  * @License: GPL 3.0
  */
 #pragma once
@@ -161,9 +161,7 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
    * @brief 返回 USP LR11xx 官方函数使用的不透明上下文
    * @return 已初始化时返回有效上下文，否则返回 nullptr
    */
-  const void* context() {
-    return initialized() ? context_.get() : nullptr;
-  }
+  const void* context() { return initialized() ? context_.get() : nullptr; }
 
  private:
   // 持有 SPI、BUSY、复位和休眠唤醒传输状态。

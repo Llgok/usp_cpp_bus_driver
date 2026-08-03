@@ -2,14 +2,13 @@
  * @Description: 实现 USP SX126x 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-16 10:51:36
+ * @LastEditTime: 2026-08-03 16:15:08
  * @License: GPL 3.0
  */
-#include "sx126x/sx126x_driver.h"
-
 #include <utility>
 
 #include "sx126x/sx126x_context.h"
+#include "sx126x/sx126x_driver.h"
 
 namespace usp_cpp_bus_driver {
 namespace {
@@ -144,8 +143,7 @@ bool Sx126x::SetSleep() {
   if (context_->sleeping) {
     return context_->bus != nullptr && context_->bus->Deinit(false);
   }
-  if (!CheckStatus(
-          sx126x_set_standby(context_.get(), SX126X_STANDBY_CFG_RC),
+  if (!CheckStatus(sx126x_set_standby(context_.get(), SX126X_STANDBY_CFG_RC),
           "sx126x_set_standby") ||
       !CheckStatus(
           sx126x_set_sleep(context_.get(), SX126X_SLEEP_CFG_WARM_START),

@@ -2,7 +2,7 @@
  * @Description: 实现 LR11xx 与 LR20xx 共用的传输操作
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-31 15:35:00
+ * @LastEditTime: 2026-08-03 16:14:59
  * @License: GPL 3.0
  */
 #include "lr_context.h"
@@ -55,9 +55,7 @@ bool LrContext::WaitWhileBusy(uint32_t timeout_us) const {
   return false;
 }
 
-bool LrContext::CheckReady() {
-  return sleeping ? Wakeup() : WaitWhileBusy();
-}
+bool LrContext::CheckReady() { return sleeping ? Wakeup() : WaitWhileBusy(); }
 
 bool LrContext::Reset(uint32_t reset_time_ms, uint32_t startup_time_ms) {
   if (!initialized || (bus == nullptr) || !reset_callback) {

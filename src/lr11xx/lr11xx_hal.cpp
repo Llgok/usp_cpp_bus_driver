@@ -2,7 +2,7 @@
  * @Description: 实现 USP LR11xx 硬件抽象层
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
+ * @LastEditTime: 2026-08-03 16:15:04
  * @License: GPL 3.0
  */
 #include "smtc_rac_lib/radio_drivers/lr11xx_driver/src/lr11xx_hal.h"
@@ -39,9 +39,8 @@ usp_cpp_bus_driver::LrContext* GetContext(const void* context) {
  * @param data_length 负载字节数
  * @return 内存分配、CRC 生成和 SPI 传输均成功时返回 true
  */
-bool WriteCommand(usp_cpp_bus_driver::LrContext* radio,
-    const uint8_t* command, uint16_t command_length, const uint8_t* data,
-    uint16_t data_length) {
+bool WriteCommand(usp_cpp_bus_driver::LrContext* radio, const uint8_t* command,
+    uint16_t command_length, const uint8_t* data, uint16_t data_length) {
   if ((radio == nullptr) || (command == nullptr) || (command_length == 0) ||
       ((data == nullptr) && (data_length != 0))) {
     return false;
@@ -72,9 +71,8 @@ bool WriteCommand(usp_cpp_bus_driver::LrContext* radio,
  * @param data_length 请求读取的响应字节数
  * @return 传输和可选 CRC 校验均成功时返回 true
  */
-bool ReadCommand(usp_cpp_bus_driver::LrContext* radio,
-    const uint8_t* command, uint16_t command_length, uint8_t* data,
-    uint16_t data_length) {
+bool ReadCommand(usp_cpp_bus_driver::LrContext* radio, const uint8_t* command,
+    uint16_t command_length, uint8_t* data, uint16_t data_length) {
   if ((radio == nullptr) || (command == nullptr) || (command_length == 0) ||
       ((data == nullptr) && (data_length != 0))) {
     return false;

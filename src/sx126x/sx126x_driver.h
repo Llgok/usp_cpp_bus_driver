@@ -218,9 +218,7 @@ class Sx126x final : public DirectDriver<Sx126x> {
    * @brief 返回 USP SX126x 官方函数使用的不透明上下文
    * @return 已初始化时返回有效上下文，否则返回 nullptr
    */
-  const void* context() {
-    return initialized() ? context_.get() : nullptr;
-  }
+  const void* context() { return initialized() ? context_.get() : nullptr; }
 
  private:
   /**

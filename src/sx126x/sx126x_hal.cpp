@@ -2,7 +2,7 @@
  * @Description: 实现 USP SX126x 硬件抽象层与传输操作
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-16 10:47:02
+ * @LastEditTime: 2026-08-03 16:15:12
  * @License: GPL 3.0
  */
 #include "sx126x_hal.h"
@@ -94,15 +94,13 @@ extern "C" sx126x_hal_status_t sx126x_hal_write(const void* context,
   if (data_length != 0) {
     std::memcpy(buffer.data() + command_length, data, data_length);
   }
-  if (!local_context->bus->Write(
-          buffer.data(), command_length + data_length)) {
+  if (!local_context->bus->Write(buffer.data(), command_length + data_length)) {
     return SX126X_HAL_STATUS_ERROR;
   }
 
   if (command[0] == usp_cpp_bus_driver::kSetSleepOpcode) {
     local_context->sleeping = true;
-    local_context->bus->DelayUs(
-        usp_cpp_bus_driver::kSleepTransitionTimeUs);
+    local_context->bus->DelayUs(usp_cpp_bus_driver::kSleepTransitionTimeUs);
     return SX126X_HAL_STATUS_OK;
   }
   return local_context->WaitWhileBusy() ? SX126X_HAL_STATUS_OK
@@ -133,10 +131,9 @@ extern "C" sx126x_hal_status_t sx126x_hal_read(const void* context,
     return SX126X_HAL_STATUS_ERROR;
   }
 
-  std::array<uint8_t, usp_cpp_bus_driver::kMaxTransactionSize>
-      write_buffer = {};
-  std::array<uint8_t, usp_cpp_bus_driver::kMaxTransactionSize> read_buffer =
+  std::array<uint8_t, usp_cpp_bus_driver::kMaxTransactionSize> write_buffer =
       {};
+  std::array<uint8_t, usp_cpp_bus_driver::kMaxTransactionSize> read_buffer = {};
   std::memcpy(write_buffer.data(), command, command_length);
   const size_t transaction_size = command_length + data_length;
   if (!local_context->bus->WriteRead(

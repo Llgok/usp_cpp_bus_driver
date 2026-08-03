@@ -2,15 +2,14 @@
  * @Description: 实现 USP LR11xx 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-31 15:35:00
+ * @LastEditTime: 2026-08-03 16:15:01
  * @License: GPL 3.0
  */
-#include "lr11xx/lr11xx_driver.h"
-
 #include <limits>
 #include <utility>
 
 #include "common/lr_context.h"
+#include "lr11xx/lr11xx_driver.h"
 #include "smtc_rac_lib/radio_drivers/lr11xx_driver/src/lr11xx_hal.h"
 
 namespace usp_cpp_bus_driver {
