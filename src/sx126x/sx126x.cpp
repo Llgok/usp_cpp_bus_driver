@@ -12,18 +12,57 @@
 
 namespace usp_cpp_bus_driver {
 namespace {
-constexpr uint16_t kReceiveIrqMask = SX126X_IRQ_RX_DONE | SX126X_IRQ_TIMEOUT |
-                                     SX126X_IRQ_CRC_ERROR |
-                                     SX126X_IRQ_HEADER_ERROR;
-constexpr uint16_t kTransmitIrqMask = SX126X_IRQ_TX_DONE | SX126X_IRQ_TIMEOUT;
+constexpr sx126x_irq_mask_t kReceiveIrqMask =
+    SX126X_IRQ_RX_DONE | SX126X_IRQ_TIMEOUT | SX126X_IRQ_CRC_ERROR |
+    SX126X_IRQ_HEADER_ERROR;
+constexpr sx126x_irq_mask_t kTransmitIrqMask =
+    SX126X_IRQ_TX_DONE | SX126X_IRQ_TIMEOUT;
+
+/**
+ * @brief 判断扩频因子是否属于 SX126x 官方支持范围
+ * @param spreading_factor SX126x 扩频因子枚举
+ * @return 扩频因子有效返回 true
+ */
+bool IsValidLoraSpreadingFactor(sx126x_lora_sf_t spreading_factor) {
+  switch (spreading_factor) {
+    case SX126X_LORA_SF5:
+    case SX126X_LORA_SF6:
+    case SX126X_LORA_SF7:
+    case SX126X_LORA_SF8:
+    case SX126X_LORA_SF9:
+    case SX126X_LORA_SF10:
+    case SX126X_LORA_SF11:
+    case SX126X_LORA_SF12:
+      return true;
+    default:
+      return false;
+  }
+}
+
+/**
+ * @brief 判断编码率是否属于 SX126x 官方支持范围
+ * @param coding_rate SX126x 编码率枚举
+ * @return 编码率有效返回 true
+ */
+bool IsValidLoraCodingRate(sx126x_lora_cr_t coding_rate) {
+  switch (coding_rate) {
+    case SX126X_LORA_CR_4_5:
+    case SX126X_LORA_CR_4_6:
+    case SX126X_LORA_CR_4_7:
+    case SX126X_LORA_CR_4_8:
+      return true;
+    default:
+      return false;
+  }
+}
 
 bool ShouldEnableLdro(const Sx126x::LoraConfig& config) {
   const uint32_t bandwidth_hz = sx126x_get_lora_bw_in_hz(config.bandwidth);
-  const auto spreading_factor = static_cast<uint32_t>(config.spreading_factor);
-  if (bandwidth_hz == 0 || spreading_factor < SX126X_LORA_SF5 ||
-      spreading_factor > SX126X_LORA_SF12) {
+  if (bandwidth_hz == 0 ||
+      !IsValidLoraSpreadingFactor(config.spreading_factor)) {
     return false;
   }
+  const auto spreading_factor = static_cast<uint32_t>(config.spreading_factor);
   const uint64_t symbol_time_numerator = uint64_t{1} << spreading_factor;
   return symbol_time_numerator * 1000U >=
          static_cast<uint64_t>(bandwidth_hz) * 16U;
@@ -163,13 +202,10 @@ bool Sx126x::Configure() { return Configure(LoraConfig{}); }
 bool Sx126x::Configure(const LoraConfig& config) {
   lora_configured_ = false;
   const uint32_t bandwidth_hz = sx126x_get_lora_bw_in_hz(config.bandwidth);
-  const auto spreading_factor = static_cast<uint32_t>(config.spreading_factor);
-  const auto coding_rate = static_cast<uint32_t>(config.coding_rate);
   if (!initialized() || config.frequency_hz == 0 ||
       config.max_payload_length == 0 || bandwidth_hz == 0 ||
-      spreading_factor < SX126X_LORA_SF5 ||
-      spreading_factor > SX126X_LORA_SF12 || coding_rate < SX126X_LORA_CR_4_5 ||
-      coding_rate > SX126X_LORA_CR_4_8 ||
+      !IsValidLoraSpreadingFactor(config.spreading_factor) ||
+      !IsValidLoraCodingRate(config.coding_rate) ||
       config.image_calibration_min_mhz >= config.image_calibration_max_mhz) {
     return false;
   }
@@ -233,7 +269,7 @@ bool Sx126x::StartReceive() {
              sx126x_cfg_rx_boosted(context_.get(), lora_config_.rx_boosted),
              "sx126x_cfg_rx_boosted") &&
          CheckStatus(sx126x_set_dio_irq_params(context_.get(), kReceiveIrqMask,
-                         kReceiveIrqMask, 0, 0),
+                         kReceiveIrqMask, SX126X_IRQ_NONE, SX126X_IRQ_NONE),
              "sx126x_set_dio_irq_params") &&
          ClearIrqStatus(SX126X_IRQ_ALL) &&
          CheckStatus(sx126x_set_rx_with_timeout_in_rtc_step(
@@ -256,7 +292,7 @@ bool Sx126x::StartTransmit(
          CheckStatus(sx126x_write_buffer(context_.get(), 0, data, payload_size),
              "sx126x_write_buffer") &&
          CheckStatus(sx126x_set_dio_irq_params(context_.get(), kTransmitIrqMask,
-                         kTransmitIrqMask, 0, 0),
+                         kTransmitIrqMask, SX126X_IRQ_NONE, SX126X_IRQ_NONE),
              "sx126x_set_dio_irq_params") &&
          ClearIrqStatus(SX126X_IRQ_ALL) &&
          CheckStatus(

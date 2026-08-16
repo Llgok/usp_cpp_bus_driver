@@ -65,7 +65,9 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
         .crc = LR20XX_RADIO_LORA_CRC_ENABLED,
         .iq = LR20XX_RADIO_LORA_IQ_STANDARD,
     };  // LoRa 数据包参数。
-    uint8_t sync_word = 0x12;  // LoRa 同步字。
+    // LoRaWAN 私有网络同步字。
+    uint8_t sync_word =
+        LR20XX_RADIO_LORA_SYNCWORD_LORAWAN_PRIVATE_NETWORK;
     lr20xx_radio_common_rx_path_t rx_path =
         LR20XX_RADIO_COMMON_RX_PATH_LF;  // 接收射频路径。
     lr20xx_radio_common_rx_path_boost_mode_t rx_boost_mode =
