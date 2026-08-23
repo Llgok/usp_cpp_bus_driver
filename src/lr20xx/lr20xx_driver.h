@@ -183,10 +183,27 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
   const void* context() { return initialized() ? context_.get() : nullptr; }
 
  private:
+  /**
+   * @brief 在目标频率超出已有校准范围时更新接收前端校准
+   * @param config 即将应用的 LoRa 射频配置
+   * @return 不需要校准或校准成功时返回 true
+   */
+  bool CalibrateFrontEndIfNeeded(const LoraConfig& config);
+
+  /**
+   * @brief 清除软件记录的接收前端校准状态
+   */
+  void InvalidateFrontEndCalibration();
+
   // 持有 SPI、BUSY、复位和休眠唤醒传输状态。
   std::unique_ptr<LrContext> context_;
   // Configure() 全部成功后为 true。
   bool lora_configured_ = false;
+  // 最近一次成功校准实际使用的 4 MHz 对齐频率。
+  uint32_t front_end_calibration_frequency_hz_ = 0;
+  // 最近一次成功校准使用的接收射频路径。
+  lr20xx_radio_common_rx_path_t front_end_calibration_rx_path_ =
+      LR20XX_RADIO_COMMON_RX_PATH_LF;
 };
 
 }  // namespace usp_cpp_bus_driver

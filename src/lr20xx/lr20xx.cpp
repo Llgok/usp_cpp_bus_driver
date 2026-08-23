@@ -15,6 +15,8 @@ namespace usp_cpp_bus_driver {
 namespace {
 constexpr size_t kFifoCapacity = 256;
 constexpr uint32_t kWakeupPulseUs = 1000;
+constexpr uint32_t kFrontEndCalibrationMaximumOffsetHz = 50000000U;
+constexpr uint32_t kFrontEndCalibrationStepHz = 4000000U;
 }  // namespace
 
 Lr20xx::Lr20xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
@@ -48,22 +50,24 @@ bool Lr20xx::Init(int32_t frequency_hz) {
 }
 
 bool Lr20xx::Deinit(bool delete_bus) {
+  lora_configured_ = false;
+  InvalidateFrontEndCalibration();
   if (!initialized()) {
     return true;
   }
   if (!context_->Deinit(delete_bus)) {
     return false;
   }
-  lora_configured_ = false;
   return true;
 }
 
 bool Lr20xx::Reset() {
+  lora_configured_ = false;
+  InvalidateFrontEndCalibration();
   if (!initialized() ||
       lr20xx_hal_reset(context_.get()) != LR20XX_HAL_STATUS_OK) {
     return false;
   }
-  lora_configured_ = false;
   return true;
 }
 
@@ -74,8 +78,13 @@ bool Lr20xx::SetSleep(const lr20xx_system_sleep_cfg_t& config) {
   if (context_->sleeping) {
     return context_->bus != nullptr && context_->bus->Deinit(false);
   }
-  return lr20xx_system_set_sleep_mode(context_.get(), &config, 0U) ==
-         LR20XX_STATUS_OK;
+  const bool result =
+      lr20xx_system_set_sleep_mode(context_.get(), &config, 0U) ==
+      LR20XX_STATUS_OK;
+  if (result && !config.is_ram_retention_enabled) {
+    InvalidateFrontEndCalibration();
+  }
+  return result;
 }
 
 bool Lr20xx::Wakeup() {
@@ -85,7 +94,10 @@ bool Lr20xx::Wakeup() {
 
 bool Lr20xx::Configure(const LoraConfig& config) {
   lora_configured_ = false;
-  if (!initialized() || config.frequency_hz == 0) {
+  if (!initialized() || config.frequency_hz == 0 ||
+      lr20xx_system_set_standby_mode(
+          context(), LR20XX_SYSTEM_STANDBY_MODE_RC) != LR20XX_STATUS_OK ||
+      !CalibrateFrontEndIfNeeded(config)) {
     return false;
   }
   lora_configured_ =
@@ -108,6 +120,44 @@ bool Lr20xx::Configure(const LoraConfig& config) {
       lr20xx_radio_common_set_tx_params(context(), config.output_power_half_dbm,
           config.ramp_time) == LR20XX_STATUS_OK;
   return lora_configured_;
+}
+
+bool Lr20xx::CalibrateFrontEndIfNeeded(const LoraConfig& config) {
+  const uint32_t frequency_difference_hz =
+      config.frequency_hz >= front_end_calibration_frequency_hz_
+      ? config.frequency_hz - front_end_calibration_frequency_hz_
+      : front_end_calibration_frequency_hz_ - config.frequency_hz;
+  const bool calibration_required =
+      front_end_calibration_frequency_hz_ == 0 ||
+      config.rx_path != front_end_calibration_rx_path_ ||
+      frequency_difference_hz > kFrontEndCalibrationMaximumOffsetHz;
+  if (!calibration_required) {
+    return true;
+  }
+
+  const lr20xx_radio_common_front_end_calibration_value_t calibration = {
+      .rx_path = config.rx_path,
+      .frequency_in_hertz = config.frequency_hz,
+  };
+  if (lr20xx_radio_common_calibrate_front_end_helper(
+          context(), &calibration, 1U) != LR20XX_STATUS_OK) {
+    return false;
+  }
+
+  const uint64_t aligned_frequency_hz =
+      ((static_cast<uint64_t>(config.frequency_hz) +
+           kFrontEndCalibrationStepHz - 1U) /
+          kFrontEndCalibrationStepHz) *
+      kFrontEndCalibrationStepHz;
+  front_end_calibration_frequency_hz_ =
+      static_cast<uint32_t>(aligned_frequency_hz);
+  front_end_calibration_rx_path_ = config.rx_path;
+  return true;
+}
+
+void Lr20xx::InvalidateFrontEndCalibration() {
+  front_end_calibration_frequency_hz_ = 0;
+  front_end_calibration_rx_path_ = LR20XX_RADIO_COMMON_RX_PATH_LF;
 }
 
 bool Lr20xx::WriteBuffer(const uint8_t* data, size_t size) {
