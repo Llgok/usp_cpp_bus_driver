@@ -7,6 +7,7 @@
  */
 #include <utility>
 
+#include "smtc_rac_lib/radio_drivers/sx126x_driver/src/sx126x_hal.h"
 #include "sx126x/sx126x_context.h"
 #include "sx126x/sx126x_driver.h"
 
@@ -17,6 +18,8 @@ constexpr sx126x_irq_mask_t kReceiveIrqMask =
     SX126X_IRQ_HEADER_ERROR;
 constexpr sx126x_irq_mask_t kTransmitIrqMask =
     SX126X_IRQ_TX_DONE | SX126X_IRQ_TIMEOUT;
+// SX126x GetPacketStatus 命令包含操作码和一个 NOP 字节。
+constexpr uint8_t kGetPacketStatusCommand[] = {0x14, 0x00};
 
 /**
  * @brief 判断扩频因子是否属于 SX126x 官方支持范围
@@ -323,17 +326,35 @@ bool Sx126x::ReadPacket(uint8_t* data, size_t capacity, uint8_t& received_size,
   }
 
   if (metrics != nullptr) {
-    sx126x_pkt_status_lora_t packet_status = {};
-    if (!CheckStatus(sx126x_get_lora_pkt_status(context_.get(), &packet_status),
-            "sx126x_get_lora_pkt_status")) {
+    if (!ReadLoraPacketMetrics(metrics)) {
       return false;
     }
-    metrics->rssi_dbm = packet_status.rssi_pkt_in_dbm;
-    metrics->snr_db = packet_status.snr_pkt_in_db;
-    metrics->signal_rssi_dbm = packet_status.signal_rssi_pkt_in_dbm;
   }
 
   received_size = buffer_status.pld_len_in_bytes;
+  return true;
+}
+
+bool Sx126x::ReadLoraPacketMetrics(PacketMetrics* metrics) const {
+  if (!initialized() || metrics == nullptr) {
+    return false;
+  }
+  uint8_t response[3] = {};
+  if (!CheckStatus(static_cast<sx126x_status_t>(sx126x_hal_read(context_.get(),
+                       kGetPacketStatusCommand,
+                       static_cast<uint16_t>(
+                           sizeof(kGetPacketStatusCommand)),
+                       response, static_cast<uint16_t>(sizeof(response)))),
+          "sx126x_get_lora_pkt_status")) {
+    return false;
+  }
+
+  // 官方便捷接口会把 RSSI 和 SNR 量化为整数；直接按数据手册的
+  // 原始单位换算，保留 RSSI 的 0.5 dB 和 SNR 的 0.25 dB 精度。
+  metrics->rssi_quarter_dbm = -static_cast<int16_t>(response[0]) * 2;
+  metrics->snr_quarter_db = static_cast<int8_t>(response[1]);
+  metrics->signal_rssi_quarter_dbm =
+      -static_cast<int16_t>(response[2]) * 2;
   return true;
 }
 

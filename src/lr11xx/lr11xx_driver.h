@@ -66,6 +66,18 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
   };
 
   /**
+   * @brief 最近一次接收的 LoRa 数据包信号质量
+   */
+  struct PacketMetrics {
+    // 数据包 RSSI，单位为四分之一 dBm。
+    int16_t rssi_quarter_dbm = 0;
+    // 数据包信噪比，单位为四分之一 dB。
+    int16_t snr_quarter_db = 0;
+    // LoRa 信号 RSSI，单位为四分之一 dBm。
+    int16_t signal_rssi_quarter_dbm = 0;
+  };
+
+  /**
    * @brief 创建 LR11xx 传输资源所有者
    * @param bus SPI 总线对象
    * @param busy_pin 芯片 BUSY 信号连接的 GPIO
@@ -150,6 +162,13 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
    * @return 发送命令被芯片接受时返回 true
    */
   bool StartTransmit(uint32_t timeout_ms);
+
+  /**
+   * @brief 读取并保留 LR11xx LoRa 数据包状态的原始量化精度
+   * @param metrics 数据包信号质量输出
+   * @return 芯片已初始化且状态读取成功时返回 true
+   */
+  bool ReadLoraPacketMetrics(PacketMetrics* metrics) const;
 
   /**
    * @brief 查询 LR11xx 传输上下文是否可以使用

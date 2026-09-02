@@ -13,6 +13,13 @@
 #include "smtc_rac_lib/radio_drivers/lr11xx_driver/src/lr11xx_hal.h"
 
 namespace usp_cpp_bus_driver {
+namespace {
+
+// LR11xx GetPacketStatus 命令的官方双字节操作码 0x0204。
+constexpr uint8_t kGetPacketStatusCommand[] = {0x02, 0x04};
+
+}  // namespace
+
 Lr11xx::Lr11xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
     int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback)
     : context_(std::make_unique<LrContext>()) {
@@ -117,6 +124,26 @@ bool Lr11xx::StartReceive(uint32_t timeout_ms) {
 bool Lr11xx::StartTransmit(uint32_t timeout_ms) {
   return lora_configured_ &&
          lr11xx_radio_set_tx(context(), timeout_ms) == LR11XX_STATUS_OK;
+}
+
+bool Lr11xx::ReadLoraPacketMetrics(PacketMetrics* metrics) const {
+  if (!initialized() || metrics == nullptr) {
+    return false;
+  }
+  uint8_t response[3] = {};
+  if (lr11xx_hal_read(context_.get(), kGetPacketStatusCommand,
+          static_cast<uint16_t>(sizeof(kGetPacketStatusCommand)), response,
+          static_cast<uint16_t>(sizeof(response))) != LR11XX_HAL_STATUS_OK) {
+    return false;
+  }
+
+  // 官方便捷接口会把 RSSI 和 SNR 量化为整数；直接按数据手册的
+  // 原始单位换算，保留 RSSI 的 0.5 dB 和 SNR 的 0.25 dB 精度。
+  metrics->rssi_quarter_dbm = -static_cast<int16_t>(response[0]) * 2;
+  metrics->snr_quarter_db = static_cast<int8_t>(response[1]);
+  metrics->signal_rssi_quarter_dbm =
+      -static_cast<int16_t>(response[2]) * 2;
+  return true;
 }
 
 }  // namespace usp_cpp_bus_driver

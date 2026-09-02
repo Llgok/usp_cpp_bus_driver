@@ -83,9 +83,12 @@ class Sx126x final : public DirectDriver<Sx126x> {
    * @brief 最近一次接收的 LoRa 数据包信号质量
    */
   struct PacketMetrics {
-    int8_t rssi_dbm = 0;         // 数据包 RSSI，单位为 dBm。
-    int8_t snr_db = 0;           // 数据包信噪比，单位为 dB。
-    int8_t signal_rssi_dbm = 0;  // LoRa 信号 RSSI，单位为 dBm。
+    // 数据包 RSSI，单位为四分之一 dBm。
+    int16_t rssi_quarter_dbm = 0;
+    // 数据包信噪比，单位为四分之一 dB。
+    int16_t snr_quarter_db = 0;
+    // LoRa 信号 RSSI，单位为四分之一 dBm。
+    int16_t signal_rssi_quarter_dbm = 0;
   };
 
   /**
@@ -221,6 +224,13 @@ class Sx126x final : public DirectDriver<Sx126x> {
   const void* context() { return initialized() ? context_.get() : nullptr; }
 
  private:
+  /**
+   * @brief 读取并保留 SX126x LoRa 数据包状态的原始量化精度
+   * @param metrics 数据包信号质量输出
+   * @return 芯片已初始化且状态读取成功时返回 true
+   */
+  bool ReadLoraPacketMetrics(PacketMetrics* metrics) const;
+
   /**
    * @brief 应用下一次收发使用的 LoRa 数据包参数
    * @param config 当前 LoRa 数据包配置
