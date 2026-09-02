@@ -2,7 +2,7 @@
  * @Description: 实现 USP LR20xx 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-08-03 16:15:05
+ * @LastEditTime: 2026-09-02 16:55:18
  * @License: GPL 3.0
  */
 #include <utility>
@@ -78,9 +78,8 @@ bool Lr20xx::SetSleep(const lr20xx_system_sleep_cfg_t& config) {
   if (context_->sleeping) {
     return context_->bus != nullptr && context_->bus->Deinit(false);
   }
-  const bool result =
-      lr20xx_system_set_sleep_mode(context_.get(), &config, 0U) ==
-      LR20XX_STATUS_OK;
+  const bool result = lr20xx_system_set_sleep_mode(
+                          context_.get(), &config, 0U) == LR20XX_STATUS_OK;
   if (result && !config.is_ram_retention_enabled) {
     InvalidateFrontEndCalibration();
   }
@@ -125,8 +124,8 @@ bool Lr20xx::Configure(const LoraConfig& config) {
 bool Lr20xx::CalibrateFrontEndIfNeeded(const LoraConfig& config) {
   const uint32_t frequency_difference_hz =
       config.frequency_hz >= front_end_calibration_frequency_hz_
-      ? config.frequency_hz - front_end_calibration_frequency_hz_
-      : front_end_calibration_frequency_hz_ - config.frequency_hz;
+          ? config.frequency_hz - front_end_calibration_frequency_hz_
+          : front_end_calibration_frequency_hz_ - config.frequency_hz;
   const bool calibration_required =
       front_end_calibration_frequency_hz_ == 0 ||
       config.rx_path != front_end_calibration_rx_path_ ||

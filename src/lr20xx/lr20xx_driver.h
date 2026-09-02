@@ -2,7 +2,7 @@
  * @Description: 声明 USP LR20xx 驱动的 C++ 桥接接口
  * @Author: LILYGO_L
  * @Date: 2026-07-12 00:00:00
- * @LastEditTime: 2026-08-03 16:15:07
+ * @LastEditTime: 2026-09-02 16:55:20
  * @License: GPL 3.0
  */
 #pragma once
@@ -66,8 +66,7 @@ class Lr20xx final : public DirectDriver<Lr20xx> {
         .iq = LR20XX_RADIO_LORA_IQ_STANDARD,
     };  // LoRa 数据包参数。
     // LoRaWAN 私有网络同步字。
-    uint8_t sync_word =
-        LR20XX_RADIO_LORA_SYNCWORD_LORAWAN_PRIVATE_NETWORK;
+    uint8_t sync_word = LR20XX_RADIO_LORA_SYNCWORD_LORAWAN_PRIVATE_NETWORK;
     lr20xx_radio_common_rx_path_t rx_path =
         LR20XX_RADIO_COMMON_RX_PATH_LF;  // 接收射频路径。
     lr20xx_radio_common_rx_path_boost_mode_t rx_boost_mode =

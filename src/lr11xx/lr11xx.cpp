@@ -2,7 +2,7 @@
  * @Description: 实现 USP LR11xx 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-08-03 16:15:01
+ * @LastEditTime: 2026-09-02 16:55:13
  * @License: GPL 3.0
  */
 #include <limits>
@@ -141,8 +141,7 @@ bool Lr11xx::ReadLoraPacketMetrics(PacketMetrics* metrics) const {
   // 原始单位换算，保留 RSSI 的 0.5 dB 和 SNR 的 0.25 dB 精度。
   metrics->rssi_quarter_dbm = -static_cast<int16_t>(response[0]) * 2;
   metrics->snr_quarter_db = static_cast<int8_t>(response[1]);
-  metrics->signal_rssi_quarter_dbm =
-      -static_cast<int16_t>(response[2]) * 2;
+  metrics->signal_rssi_quarter_dbm = -static_cast<int16_t>(response[2]) * 2;
   return true;
 }
 

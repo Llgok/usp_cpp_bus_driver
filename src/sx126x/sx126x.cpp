@@ -2,7 +2,7 @@
  * @Description: 实现 USP SX126x 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-08-03 16:15:08
+ * @LastEditTime: 2026-09-02 16:55:16
  * @License: GPL 3.0
  */
 #include <utility>
@@ -342,8 +342,7 @@ bool Sx126x::ReadLoraPacketMetrics(PacketMetrics* metrics) const {
   uint8_t response[3] = {};
   if (!CheckStatus(static_cast<sx126x_status_t>(sx126x_hal_read(context_.get(),
                        kGetPacketStatusCommand,
-                       static_cast<uint16_t>(
-                           sizeof(kGetPacketStatusCommand)),
+                       static_cast<uint16_t>(sizeof(kGetPacketStatusCommand)),
                        response, static_cast<uint16_t>(sizeof(response)))),
           "sx126x_get_lora_pkt_status")) {
     return false;
@@ -353,8 +352,7 @@ bool Sx126x::ReadLoraPacketMetrics(PacketMetrics* metrics) const {
   // 原始单位换算，保留 RSSI 的 0.5 dB 和 SNR 的 0.25 dB 精度。
   metrics->rssi_quarter_dbm = -static_cast<int16_t>(response[0]) * 2;
   metrics->snr_quarter_db = static_cast<int8_t>(response[1]);
-  metrics->signal_rssi_quarter_dbm =
-      -static_cast<int16_t>(response[2]) * 2;
+  metrics->signal_rssi_quarter_dbm = -static_cast<int16_t>(response[2]) * 2;
   return true;
 }
 
