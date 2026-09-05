@@ -12,7 +12,7 @@
 #include <functional>
 #include <memory>
 
-#include "bus/bus_guide.h"
+#include "bus/bus_base.h"
 #include "common/direct_driver.h"
 #include "common/lr_context.h"
 #include "lr11xx_bootloader.h"
@@ -84,7 +84,7 @@ class Lr11xx final : public DirectDriver<Lr11xx> {
    * @param cs_pin SPI 片选使用的 GPIO
    * @param reset_callback 控制开发板硬件复位信号的回调
    */
-  explicit Lr11xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
+  explicit Lr11xx(std::shared_ptr<cpp_bus_driver::SpiBusBase> bus,
       int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback);
 
   /**

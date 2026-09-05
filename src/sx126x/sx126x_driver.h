@@ -12,7 +12,7 @@
 #include <functional>
 #include <memory>
 
-#include "bus/bus_guide.h"
+#include "bus/bus_base.h"
 #include "common/direct_driver.h"
 #include "smtc_rac_lib/radio_drivers/sx126x_driver/src/lr_fhss_mac.h"
 #include "smtc_rac_lib/radio_drivers/sx126x_driver/src/sx126x.h"
@@ -98,7 +98,7 @@ class Sx126x final : public DirectDriver<Sx126x> {
    * @param cs_pin SPI 片选使用的 GPIO
    * @param reset_callback 控制开发板硬件复位信号的回调
    */
-  explicit Sx126x(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
+  explicit Sx126x(std::shared_ptr<cpp_bus_driver::SpiBusBase> bus,
       int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback);
 
   /**
@@ -109,7 +109,7 @@ class Sx126x final : public DirectDriver<Sx126x> {
    * @param reset_callback 控制开发板硬件复位信号的回调
    * @param hardware_config 开发板电源、时钟和 RF Switch 配置
    */
-  explicit Sx126x(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
+  explicit Sx126x(std::shared_ptr<cpp_bus_driver::SpiBusBase> bus,
       int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback,
       HardwareConfig hardware_config);
 

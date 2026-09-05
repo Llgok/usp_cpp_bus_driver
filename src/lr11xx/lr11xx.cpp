@@ -20,7 +20,7 @@ constexpr uint8_t kGetPacketStatusCommand[] = {0x02, 0x04};
 
 }  // namespace
 
-Lr11xx::Lr11xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
+Lr11xx::Lr11xx(std::shared_ptr<cpp_bus_driver::SpiBusBase> bus,
     int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback)
     : context_(std::make_unique<LrContext>()) {
   context_->bus = std::move(bus);

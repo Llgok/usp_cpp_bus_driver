@@ -12,7 +12,7 @@
 #include <functional>
 #include <memory>
 
-#include "bus/bus_guide.h"
+#include "bus/bus_base.h"
 
 namespace usp_cpp_bus_driver {
 // LR11xx 和 LR20xx HAL 入口共用的传输状态
@@ -21,7 +21,7 @@ struct LrContext {
   using ResetCallback = std::function<bool(bool)>;
 
   // 与应用程序共享的 SPI 传输对象
-  std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus;
+  std::shared_ptr<cpp_bus_driver::SpiBusBase> bus;
   // 由应用程序提供的开发板复位操作
   ResetCallback reset_callback;
   // NSS 唤醒脉冲保持低电平的时间，单位为 us

@@ -17,8 +17,8 @@ bool LrContext::Init(int32_t new_frequency_hz) {
   if ((bus == nullptr) || !reset_callback || (busy_pin < 0) || (cs_pin < 0)) {
     return false;
   }
-  if (!bus->SetGpioMode(busy_pin, cpp_bus_driver::Tool::GpioMode::kInput,
-          cpp_bus_driver::Tool::GpioStatus::kDisable)) {
+  if (!bus->SetGpioMode(busy_pin, cpp_bus_driver::PlatformHal::GpioMode::kInput,
+          cpp_bus_driver::PlatformHal::GpioStatus::kDisable)) {
     return false;
   }
   if (!bus->Init(new_frequency_hz, cs_pin)) {
@@ -50,7 +50,7 @@ bool LrContext::WaitWhileBusy(uint32_t timeout_us) const {
     }
     bus->DelayUs(1);
   }
-  bus->LogMessage(cpp_bus_driver::Tool::LogLevel::kError, __FILE__, __LINE__,
+  bus->LogMessage(cpp_bus_driver::Logger::LogLevel::kError, __FILE__, __LINE__,
       "USP radio busy timeout\n");
   return false;
 }
@@ -83,7 +83,7 @@ bool LrContext::Wakeup() {
   }
 
   bool result =
-      bus->SetGpioMode(cs_pin, cpp_bus_driver::Tool::GpioMode::kOutput) &&
+      bus->SetGpioMode(cs_pin, cpp_bus_driver::PlatformHal::GpioMode::kOutput) &&
       bus->GpioWrite(cs_pin, 1) && bus->GpioWrite(cs_pin, 0);
   if (!result) {
     bus->GpioWrite(cs_pin, 1);

@@ -31,7 +31,7 @@ bool Sx126xContext::WaitWhileBusy(uint32_t timeout_us) const {
     }
     bus->DelayUs(1);
   }
-  bus->LogMessage(cpp_bus_driver::Tool::LogLevel::kError, __FILE__, __LINE__,
+  bus->LogMessage(cpp_bus_driver::Logger::LogLevel::kError, __FILE__, __LINE__,
       "SX126x busy timeout\n");
   return false;
 }
@@ -47,7 +47,7 @@ bool Sx126xContext::Wakeup() {
   }
 
   // USP 官方示例在唤醒期间保持 NSS 为低电平，直到 BUSY 拉低。
-  if (!bus->SetGpioMode(cs_pin, cpp_bus_driver::Tool::GpioMode::kOutput) ||
+  if (!bus->SetGpioMode(cs_pin, cpp_bus_driver::PlatformHal::GpioMode::kOutput) ||
       !bus->GpioWrite(cs_pin, 1) || !bus->GpioWrite(cs_pin, 0)) {
     bus->GpioWrite(cs_pin, 1);
     return false;

@@ -72,7 +72,7 @@ git submodule update --init --recursive
 Then include the unified entry header:
 
 ```cpp
-#include "usp_cpp_bus_driver_library.h"
+#include "usp_cpp_bus_driver.h"
 ```
 
 When only part of the component is needed, include the relevant aggregate
@@ -98,8 +98,8 @@ object:
 ```cpp
 #include <memory>
 
-#include "cpp_bus_driver_library.h"
-#include "usp_cpp_bus_driver_library.h"
+#include "cpp_bus_driver.h"
+#include "usp_cpp_bus_driver.h"
 
 auto spi_bus = std::make_shared<cpp_bus_driver::HardwareSpi>(
     mosi_pin, sclk_pin, miso_pin, SPI2_HOST, 0);

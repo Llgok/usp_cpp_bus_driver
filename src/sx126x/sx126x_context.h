@@ -11,13 +11,13 @@
 #include <functional>
 #include <memory>
 
-#include "bus/bus_guide.h"
+#include "bus/bus_base.h"
 
 namespace usp_cpp_bus_driver {
 // USP SX126x HAL 实现所需的传输状态
 struct Sx126xContext {
   // 与应用程序共享的 SPI 传输对象
-  std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus;
+  std::shared_ptr<cpp_bus_driver::SpiBusBase> bus;
   // 控制低电平有效的硬件复位信号
   std::function<bool(bool)> reset_callback;
   // 连接无线芯片 BUSY 输出的 GPIO

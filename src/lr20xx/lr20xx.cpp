@@ -19,7 +19,7 @@ constexpr uint32_t kFrontEndCalibrationMaximumOffsetHz = 50000000U;
 constexpr uint32_t kFrontEndCalibrationStepHz = 4000000U;
 }  // namespace
 
-Lr20xx::Lr20xx(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
+Lr20xx::Lr20xx(std::shared_ptr<cpp_bus_driver::SpiBusBase> bus,
     int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback)
     : context_(std::make_unique<LrContext>()) {
   context_->bus = std::move(bus);

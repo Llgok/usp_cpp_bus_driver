@@ -72,12 +72,12 @@ bool ShouldEnableLdro(const Sx126x::LoraConfig& config) {
 }
 }  // namespace
 
-Sx126x::Sx126x(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
+Sx126x::Sx126x(std::shared_ptr<cpp_bus_driver::SpiBusBase> bus,
     int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback)
     : Sx126x(std::move(bus), busy_pin, cs_pin, std::move(reset_callback),
           HardwareConfig{}) {}
 
-Sx126x::Sx126x(std::shared_ptr<cpp_bus_driver::BusSpiGuide> bus,
+Sx126x::Sx126x(std::shared_ptr<cpp_bus_driver::SpiBusBase> bus,
     int32_t busy_pin, int32_t cs_pin, ResetCallback reset_callback,
     HardwareConfig hardware_config)
     : context_(std::make_unique<Sx126xContext>()) {
@@ -104,8 +104,8 @@ bool Sx126x::Init(int32_t frequency_hz) {
 
   context_->frequency_hz = frequency_hz;
   if (!context_->bus->SetGpioMode(context_->busy_pin,
-          cpp_bus_driver::Tool::GpioMode::kInput,
-          cpp_bus_driver::Tool::GpioStatus::kDisable)) {
+          cpp_bus_driver::PlatformHal::GpioMode::kInput,
+          cpp_bus_driver::PlatformHal::GpioStatus::kDisable)) {
     return false;
   }
   if (!context_->bus->Init(frequency_hz, context_->cs_pin)) {
@@ -392,7 +392,7 @@ bool Sx126x::CheckStatus(sx126x_status_t status, const char* operation) const {
     return true;
   }
   if (context_->bus != nullptr) {
-    context_->bus->LogMessage(cpp_bus_driver::Tool::LogLevel::kError, __FILE__,
+    context_->bus->LogMessage(cpp_bus_driver::Logger::LogLevel::kError, __FILE__,
         __LINE__, "%s failed (error code: %d)\n", operation,
         static_cast<int>(status));
   }

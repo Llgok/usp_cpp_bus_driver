@@ -66,7 +66,7 @@ git submodule update --init --recursive
 然后在代码中包含统一入口：
 
 ```cpp
-#include "usp_cpp_bus_driver_library.h"
+#include "usp_cpp_bus_driver.h"
 ```
 
 如只使用部分功能，可直接包含对应目录下的聚合头文件。可用入口以组件中的
@@ -89,8 +89,8 @@ git submodule update --init --recursive
 ```cpp
 #include <memory>
 
-#include "cpp_bus_driver_library.h"
-#include "usp_cpp_bus_driver_library.h"
+#include "cpp_bus_driver.h"
+#include "usp_cpp_bus_driver.h"
 
 auto spi_bus = std::make_shared<cpp_bus_driver::HardwareSpi>(
     mosi_pin, sclk_pin, miso_pin, SPI2_HOST, 0);
