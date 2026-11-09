@@ -2,8 +2,7 @@
  * @Description: 实现 USP SX126x 硬件抽象层与传输操作
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-08-03 16:15:12
- * @License: GPL 3.0
+ * @LastEditTime: 2026-11-09 10:05:08
  */
 #include "sx126x_hal.h"
 

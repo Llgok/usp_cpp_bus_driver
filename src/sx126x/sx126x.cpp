@@ -2,8 +2,7 @@
  * @Description: 实现 USP SX126x 驱动的 C++ 桥接
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-09-02 16:55:16
- * @License: GPL 3.0
+ * @LastEditTime: 2026-11-09 10:05:08
  */
 #include <utility>
 

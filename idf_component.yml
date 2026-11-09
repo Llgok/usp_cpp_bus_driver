@@ -1,5 +1,5 @@
 version: "1.1.0"
-license: "GPL-3.0"
+license: "AGPL-3.0"
 description: "USP official radio driver bridge for cpp_bus_driver."
 url: https://github.com/Llgok/usp_cpp_bus_driver
 

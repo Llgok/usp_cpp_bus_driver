@@ -2,8 +2,7 @@
  * @Description: 实现 USP LR11xx 硬件抽象层
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-08-03 16:15:04
- * @License: GPL 3.0
+ * @LastEditTime: 2026-11-09 10:05:08
  */
 #include "smtc_rac_lib/radio_drivers/lr11xx_driver/src/lr11xx_hal.h"
 

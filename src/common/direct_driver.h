@@ -2,8 +2,7 @@
  * @Description: 为 USP 官方驱动提供类型安全的函数转发
  * @Author: LILYGO_L
  * @Date: 2026-07-12 00:00:00
- * @LastEditTime: 2026-07-15 01:12:34
- * @License: GPL 3.0
+ * @LastEditTime: 2026-11-09 10:05:08
  */
 #pragma once
 

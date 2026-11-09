@@ -2,8 +2,7 @@
  * @Description: 声明 LR11xx 与 LR20xx 共用的传输上下文
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-07-31 15:35:00
- * @License: GPL 3.0
+ * @LastEditTime: 2026-11-09 10:05:08
  */
 #pragma once
 

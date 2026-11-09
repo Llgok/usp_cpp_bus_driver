@@ -2,8 +2,7 @@
  * @Description: 实现 LR11xx 与 LR20xx 共用的传输操作
  * @Author: LILYGO_L
  * @Date: 2026-07-10 00:00:00
- * @LastEditTime: 2026-08-03 16:14:59
- * @License: GPL 3.0
+ * @LastEditTime: 2026-11-09 10:05:08
  */
 #include "lr_context.h"
 
